@@ -23,23 +23,18 @@ class QZERO_API ThemeManager : public QObject
     QML_SINGLETON
     QML_ELEMENT
     Q_PROPERTY(QVariantMap currentTheme READ currentTheme WRITE setCurrentTheme NOTIFY currentThemeChanged);
-    Q_PROPERTY(QVariantMap fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged);
     Q_PROPERTY(QVariantMap styleSize READ styleSize WRITE setStyleSize NOTIFY styleSizeChanged);
 
 public:
+    static ThemeManager* create(QQmlEngine*, QJSEngine*);
+
     ~ThemeManager() noexcept = default;
 
     Q_INVOKABLE QVariantMap currentTheme() const;
     Q_INVOKABLE void        setCurrentTheme(const QVariantMap& _currentTheme);
 
-    Q_INVOKABLE QVariantMap fontSize() const;
-    Q_INVOKABLE void        setFontSize(const QVariantMap& _fontSize);
-
     Q_INVOKABLE QVariantMap styleSize() const;
     Q_INVOKABLE void        setStyleSize(const QVariantMap& _styleSize);
-
-public:
-    static ThemeManager* create(QQmlEngine*, QJSEngine*);
 
 private:
     explicit(true) ThemeManager(QObject* _parent = nullptr);
@@ -52,14 +47,11 @@ Q_SIGNALS:
 
     void currentThemeChanged();
 
-    void fontSizeChanged();
-
     void styleSizeChanged();
 
 private Q_SLOTS:
 
 private:
     QVariantMap m_currentTheme{};
-    QVariantMap m_fontSize{};
     QVariantMap m_styleSize{};
 };

@@ -15,7 +15,7 @@ Rectangle {
     readonly property string textColor: ThemeManager.currentTheme["textColor"]
     readonly property int elementRadius: ThemeManager.styleSize["elementRadius"]
     readonly property int elementMargins: ThemeManager.styleSize["elementMargins"]
-    readonly property int fontSize: ThemeManager.fontSize["L"]
+    readonly property int fontSize: ThemeFont.fontSize
 
     Text {
         anchors.fill: parent

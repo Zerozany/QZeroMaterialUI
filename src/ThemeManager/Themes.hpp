@@ -14,19 +14,6 @@ namespace Themes
         {"labelColor", "transparent"},
     };
 
-    inline QVariantMap fontFamilys{
-        {"zh_CW", "微软雅黑"},
-        {"en_US", "Arial"},
-    };
-
-    inline QVariantMap fontSize{
-        {"XXL", 16},
-        {"XL", 14},
-        {"L", 12},
-        {"S", 10},
-        {"M", 8},
-    };
-
     inline QVariantMap styleSize{
         {"elementMargins", 5},
         {"elementRadius", 5},

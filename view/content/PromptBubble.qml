@@ -12,7 +12,7 @@ Rectangle {
     readonly property int elementRadius: ThemeManager.styleSize["elementRadius"]
     readonly property int elementMargins: ThemeManager.styleSize["elementMargins"]
     readonly property int elementSpacing: ThemeManager.styleSize["elementSpacing"]
-    readonly property int fontSize: ThemeManager.fontSize["L"]
+    readonly property int fontSize: ThemeFont.fontSize
 
     Text {
         anchors.centerIn: parent
