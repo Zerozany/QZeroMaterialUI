@@ -16,7 +16,7 @@ Rectangle {
 
     property bool _pressedTag: false
     readonly property int elementSpacing: 0
-    readonly property string textColorPressed: ThemeManager.currentTheme["textColorPressed"]
+    readonly property string textPressedColor: ThemeManager.currentTheme["textPressedColor"]
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
     readonly property string textColor: ThemeManager.currentTheme["textColor"]
     readonly property int elementRadius: ElementStyle.elementRadius
@@ -42,7 +42,7 @@ Rectangle {
             }
             Text {
                 text: root.text
-                color: root._pressedTag ? root.textColorPressed : root.textColor
+                color: root._pressedTag ? root.textPressedColor : root.textColor
                 wrapMode: Text.WordWrap
                 font.pixelSize: Math.floor(root.height * 0.33)
                 font.bold: root.fontBold
@@ -69,7 +69,7 @@ Rectangle {
             }
             Text {
                 text: root.text
-                color: root._pressedTag ? root.textColorPressed : root.textColor
+                color: root._pressedTag ? root.textPressedColor : root.textColor
                 wrapMode: Text.WordWrap
                 font.pixelSize: Math.floor(root.width * 0.2)
                 font.bold: root.fontBold
