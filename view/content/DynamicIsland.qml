@@ -26,18 +26,15 @@ Rectangle {
         y: -(root.selfY)
         width: ComponentMethod.findTopLevelWindow(root).width
         height: ComponentMethod.findTopLevelWindow(root).height
-        enabled: root.focus
+        enabled: root.clickedAnimationStart || root.pressedAnimationStart
         onClicked: {
-            if (!dynamicIslandArea.containsMouse) {
-                root.animationEnd = true;
-                root.clickedAnimationStart = false;
-                root.pressedAnimationStart = false;
-            }
+            root.clickedAnimationStart = false;
+            root.pressedAnimationStart = false;
+            root.animationEnd = true;
         }
     }
 
     MouseArea {
-        id: dynamicIslandArea
         anchors.fill: parent
         hoverEnabled: true
         pressAndHoldInterval: 300
