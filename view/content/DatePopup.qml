@@ -14,18 +14,45 @@ Popup {
         radius: root.elementRadius
     }
 
+    property string date: ""
     readonly property int selfX: (ComponentMethod.findTopLevelWindow(parent).width - root.width) * 0.5
     readonly property int selfY: (ComponentMethod.findTopLevelWindow(parent).height - root.height) * 0.5
     readonly property int selfWidth: ComponentConf.landScape ? ComponentMethod.findTopLevelWindow(parent).width * 0.6 : ComponentMethod.findTopLevelWindow(parent).width * 0.7
     readonly property int selfHeight: ComponentConf.landScape ? ComponentMethod.findTopLevelWindow(parent).height * 0.6 : ComponentMethod.findTopLevelWindow(parent).height * 0.4
     readonly property int elementRadius: ElementStyle.elementRadius * 20
-    readonly property int elementSpacing: ElementStyle.elementSpacing
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
     readonly property int visibleItemCount: 7
     readonly property int flickDeceleration: 1000
-    readonly property int year: yearTumbler.currentIndex + 1960
+    readonly property int tumblerHeight: root.height * 0.7
+    readonly property int initYear: 1960
+    readonly property int year: yearTumbler.currentIndex + root.initYear
     readonly property int month: monthTumbler.currentIndex + 1
     readonly property int day: dayTumbler.currentIndex + 1
+
+    onDateChanged: {
+        if (!date) {
+            return;
+        }
+        var ymdArr = date.split("-");
+        Qt.callLater(function () {
+            yearTumbler.currentIndex = Math.max(0, Number(ymdArr[0]) - root.initYear);
+            monthTumbler.currentIndex = Math.max(0, Number(ymdArr[1]) - 1);
+            dayTumbler.currentIndex = Math.max(0, Math.min(Number(ymdArr[2]), new Date(Number(ymdArr[0]), Number(ymdArr[1]), 0).getDate()) - 1);
+        });
+        console.log(date);
+    }
+
+    onClosed: {
+        if (month < 10 && day < 10) {
+            root.date = year + "-0" + month + "-0" + day;
+        } else if (month < 10) {
+            root.date = year + "-0" + month + "-" + day;
+        } else if (day < 10) {
+            root.date = year + "-" + month + "-0" + day;
+        } else {
+            root.date = year + "-" + month + "-" + day;
+        }
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -35,12 +62,12 @@ Popup {
             visibleItemCount: root.visibleItemCount
             flickDeceleration: root.flickDeceleration
             wrap: true
-            Layout.preferredHeight: root.height * 0.7
+            Layout.preferredHeight: root.tumblerHeight
             Layout.alignment: Qt.AlignCenter
 
             model: {
                 var arr = [];
-                for (var _year = 1960; _year <= new Date().getFullYear(); _year++) {
+                for (var _year = root.initYear; _year <= new Date().getFullYear(); _year++) {
                     arr.push(_year);
                 }
                 return arr;
@@ -70,7 +97,7 @@ Popup {
             visibleItemCount: root.visibleItemCount
             flickDeceleration: root.flickDeceleration
             wrap: true
-            Layout.preferredHeight: root.height * 0.7
+            Layout.preferredHeight: root.tumblerHeight
             Layout.alignment: Qt.AlignCenter
 
             model: {
@@ -105,7 +132,7 @@ Popup {
             visibleItemCount: root.visibleItemCount
             flickDeceleration: root.flickDeceleration
             wrap: true
-            Layout.preferredHeight: root.height * 0.7
+            Layout.preferredHeight: root.tumblerHeight
             Layout.alignment: Qt.AlignCenter
 
             model: {
