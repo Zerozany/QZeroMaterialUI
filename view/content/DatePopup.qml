@@ -25,9 +25,9 @@ Popup {
     readonly property int flickDeceleration: 1000
     readonly property int tumblerHeight: root.height * 0.7
     readonly property int initYear: 1960
-    readonly property int year: yearTumbler.currentIndex + root.initYear
-    readonly property int month: monthTumbler.currentIndex + 1
-    readonly property int day: dayTumbler.currentIndex + 1
+    readonly property string year: yearTumbler.currentIndex + root.initYear
+    readonly property string month: monthTumbler.currentIndex + 1 < 10 ? "0" + (monthTumbler.currentIndex + 1) : monthTumbler.currentIndex + 1
+    readonly property string day: dayTumbler.currentIndex + 1 < 10 ? "0" + (dayTumbler.currentIndex + 1) : dayTumbler.currentIndex + 1
 
     onDateChanged: {
         if (!date) {
@@ -43,15 +43,7 @@ Popup {
     }
 
     onClosed: {
-        if (month < 10 && day < 10) {
-            root.date = year + "-0" + month + "-0" + day;
-        } else if (month < 10) {
-            root.date = year + "-0" + month + "-" + day;
-        } else if (day < 10) {
-            root.date = year + "-" + month + "-0" + day;
-        } else {
-            root.date = year + "-" + month + "-" + day;
-        }
+        root.date = year + "-" + month + "-" + day;
     }
 
     RowLayout {
@@ -110,7 +102,7 @@ Popup {
 
             delegate: Text {
                 required property var modelData
-                readonly property bool isCurrent: root.month === modelData
+                readonly property bool isCurrent: Number(root.month) === modelData
                 text: modelData
                 font.pixelSize: isCurrent ? 25 : 22
                 font.bold: isCurrent
@@ -145,7 +137,7 @@ Popup {
 
             delegate: Text {
                 required property var modelData
-                readonly property bool isCurrent: root.day === modelData
+                readonly property bool isCurrent: Number(root.day) === modelData
                 text: modelData
                 font.pixelSize: isCurrent ? 25 : 22
                 font.bold: isCurrent
