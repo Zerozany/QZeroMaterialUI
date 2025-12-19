@@ -14,7 +14,7 @@ Popup {
         radius: root.elementRadius
     }
 
-    property string date: ""
+    property string date: "1999-06-13"
     readonly property int selfX: (ComponentMethod.findTopLevelWindow(parent).width - root.width) * 0.5
     readonly property int selfY: (ComponentMethod.findTopLevelWindow(parent).height - root.height) * 0.5
     readonly property int selfWidth: ComponentConf.landScape ? ComponentMethod.findTopLevelWindow(parent).width * 0.6 : ComponentMethod.findTopLevelWindow(parent).width * 0.7
@@ -52,7 +52,7 @@ Popup {
             id: yearTumbler
             visibleItemCount: root.visibleItemCount
             flickDeceleration: root.flickDeceleration
-            wrap: true
+            wrap: false
             Layout.preferredHeight: root.tumblerHeight
             Layout.alignment: Qt.AlignCenter
 
@@ -87,7 +87,7 @@ Popup {
             id: monthTumbler
             visibleItemCount: root.visibleItemCount
             flickDeceleration: root.flickDeceleration
-            wrap: true
+            wrap: false
             Layout.preferredHeight: root.tumblerHeight
             Layout.alignment: Qt.AlignCenter
 
@@ -122,7 +122,7 @@ Popup {
             id: dayTumbler
             visibleItemCount: root.visibleItemCount
             flickDeceleration: root.flickDeceleration
-            wrap: true
+            wrap: false
             Layout.preferredHeight: root.tumblerHeight
             Layout.alignment: Qt.AlignCenter
 
