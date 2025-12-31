@@ -61,7 +61,7 @@ Rectangle {
                     return -root.width;
                 }
                 if (root.edge === root.rightEdge) {
-                    return ComponentMethod.findTopLevelWindow(root).width;
+                    return root.Window.window.contentItem.width;
                 } else {
                     return root.x;
                 }
@@ -71,7 +71,7 @@ Rectangle {
                     return root.elementMargins * 3;
                 }
                 if (root.edge === root.rightEdge) {
-                    return ComponentMethod.findTopLevelWindow(root).width - root.width - root.elementMargins * 3;
+                    return root.Window.window.contentItem.width - root.width - root.elementMargins * 3;
                 } else {
                     return root.x;
                 }
@@ -86,7 +86,7 @@ Rectangle {
                 if (root.edge === root.leftEdge) {
                     return root.elementMargins;
                 } else if (root.edge === root.rightEdge) {
-                    return ComponentMethod.findTopLevelWindow(root).width - root.width - root.elementMargins;
+                    return root.Window.window.contentItem.width - root.width - root.elementMargins;
                 } else {
                     return root.x;
                 }
@@ -106,7 +106,7 @@ Rectangle {
                     return -root.height;
                 }
                 if (root.edge === root.bottomEdge) {
-                    return ComponentMethod.findTopLevelWindow(root).height;
+                    return root.Window.window.contentItem.height;
                 } else {
                     return root.y;
                 }
@@ -116,7 +116,7 @@ Rectangle {
                     return root.elementMargins * 3;
                 }
                 if (root.edge === root.bottomEdge) {
-                    return ComponentMethod.findTopLevelWindow(root).height - root.height - root.elementMargins * 3;
+                    return root.Window.window.contentItem.height - root.height - root.elementMargins * 3;
                 } else {
                     return root.y;
                 }
@@ -131,7 +131,7 @@ Rectangle {
                 if (root.edge === root.topEdge) {
                     return root.elementMargins;
                 } else if (root.edge === root.bottomEdge) {
-                    return ComponentMethod.findTopLevelWindow(root).height - root.height - root.elementMargins;
+                    return root.Window.window.contentItem.height - root.height - root.elementMargins;
                 } else {
                     return root.y;
                 }

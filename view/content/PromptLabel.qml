@@ -35,7 +35,7 @@ Rectangle {
 
             Image {
                 source: root.source
-                visible: root.source
+                visible: root.source.toString() !== ""
                 fillMode: Image.PreserveAspectFit
                 Layout.preferredWidth: root.height * 0.3
                 Layout.preferredHeight: root.height * 0.3
@@ -64,7 +64,7 @@ Rectangle {
 
             Image {
                 source: root.source
-                visible: root.source
+                visible: root.source.toString() !== ""
                 fillMode: Image.PreserveAspectFit
                 Layout.preferredWidth: root.width * 0.5
                 Layout.preferredHeight: root.width * 0.5

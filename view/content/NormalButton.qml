@@ -37,7 +37,7 @@ Rectangle {
 
             Image {
                 source: root._pressedTag ? root.sourcePressed : root.source
-                visible: root.sourcePressed || root.source
+                visible: root.sourcePressed.toString() !== "" || root.source.toString() !== ""
                 fillMode: Image.PreserveAspectFit
                 Layout.preferredWidth: root.height * 0.3
                 Layout.preferredHeight: root.height * 0.3
@@ -66,7 +66,7 @@ Rectangle {
 
             Image {
                 source: root._pressedTag ? root.sourcePressed : root.source
-                visible: root.sourcePressed || root.source
+                visible: root.sourcePressed.toString() !== "" || root.source.toString() !== ""
                 fillMode: Image.PreserveAspectFit
                 Layout.preferredWidth: root.width * 0.5
                 Layout.preferredHeight: root.width * 0.5

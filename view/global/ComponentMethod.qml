@@ -3,14 +3,6 @@ import QtQuick
 
 QtObject {
 
-    // 获取顶层窗口对象
-    function findTopLevelWindow(_item: var): var {
-        while (_item.parent) {
-            _item = _item.parent;
-        }
-        return _item;
-    }
-
     // 全局提示气泡
     function showApplicationTip(_parentItem: var, _text: var, _interval: int): var {
         var obj = Qt.createComponent("../content/ApplicationTip.qml");

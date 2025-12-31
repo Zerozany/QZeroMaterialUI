@@ -43,7 +43,7 @@ Rectangle {
         if (relativePoint.x - (root.width - parent.width) / 2 <= 0) {
             return 0;
         }
-        if (relativePoint.x + parent.width + (root.width - parent.width) / 2 >= ComponentMethod.findTopLevelWindow(parent).width) {
+        if (relativePoint.x + parent.width + (root.width - parent.width) / 2 >= parent.Window.window.contentItem.width) {
             return parent.width - root.width;
         }
         return (parent.width - root.width) / 2;
@@ -54,7 +54,7 @@ Rectangle {
         if (relativePoint.y < root.height + root.elementMargins) {
             return parent.height + root.elementMargins;
         }
-        if (relativePoint.y + parent.height + root.height + root.elementMargins > ComponentMethod.findTopLevelWindow(parent).height) {
+        if (relativePoint.y + parent.height + root.height + root.elementMargins > parent.Window.window.contentItem.height) {
             return -root.height - root.elementMargins;
         }
         return parent.height + root.elementMargins;
