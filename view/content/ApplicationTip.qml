@@ -11,9 +11,9 @@ Rectangle {
     property string text: ""
     property int interval: 2000
 
-    readonly property int selfX: (parent.width - root.width) * 0.5
-    readonly property int selfY: ComponentConf.landScape ? parent.height * 0.2 : parent.height * 0.1
-    readonly property int selfWidth: ComponentConf.landScape ? parent.width * 0.5 : parent.width * 0.8
+    readonly property int selfX: (ComponentMethod.findTopLevelWindow(parent).width - root.width) * 0.5
+    readonly property int selfY: ComponentConf.landScape ? ComponentMethod.findTopLevelWindow(parent).height * 0.2 : ComponentMethod.findTopLevelWindow(parent).height * 0.1
+    readonly property int selfWidth: ComponentConf.landScape ? ComponentMethod.findTopLevelWindow(parent).width * 0.5 : ComponentMethod.findTopLevelWindow(parent).width * 0.8
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
     readonly property string textColor: ThemeManager.currentTheme["textColor"]
     readonly property int elementRadius: ElementStyle.elementRadius * 2

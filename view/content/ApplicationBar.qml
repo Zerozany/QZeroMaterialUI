@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 
 Rectangle {
     id: root
@@ -7,7 +6,7 @@ Rectangle {
     color: root.elementColor
 
     property int edge: -1
-    property var sidebarValueList: null
+    property Component contentItem: null
 
     readonly property int topEdge: 0
     readonly property int bottomEdge: 1
@@ -18,7 +17,10 @@ Rectangle {
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property bool landScape: ComponentMethod.findTopLevelWindow(parent).width > ComponentMethod.findTopLevelWindow(parent).height
 
-    ColumnLayout {}
+    Loader {
+        anchors.fill: parent
+        sourceComponent: root.contentItem
+    }
 
     onEdgeChanged: {
         if (root.edge === root.topEdge || root.edge === root.bottomEdge) {
