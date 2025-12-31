@@ -15,12 +15,12 @@ Rectangle {
     property bool fontBold: false
 
     property bool _pressedTag: false
-    readonly property int elementSpacing: 0
     readonly property string textPressedColor: ThemeManager.currentTheme["textPressedColor"]
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
     readonly property string textColor: ThemeManager.currentTheme["textColor"]
     readonly property int elementRadius: ElementStyle.elementRadius
     readonly property int elementMargins: ElementStyle.elementMargins
+    readonly property int elementSpacing: ElementStyle.elementSpacing
     readonly property string fontFamily: ThemeFont.fontFamily
 
     Loader {
@@ -33,20 +33,21 @@ Rectangle {
 
         RowLayout {
             anchors.centerIn: parent
-            spacing: root.elementSpacing * 1.0
+            spacing: root.elementSpacing
 
             Image {
                 source: root._pressedTag ? root.sourcePressed : root.source
-                visible: !root.sourcePressed && !root.source
+                visible: root.sourcePressed || root.source
                 fillMode: Image.PreserveAspectFit
-                Layout.preferredWidth: root.height * 0.5
+                Layout.preferredWidth: root.height * 0.3
+                Layout.preferredHeight: root.height * 0.3
                 Layout.alignment: Qt.AlignVCenter
             }
             Text {
                 text: root.text
                 color: root._pressedTag ? root.textPressedColor : root.textColor
                 wrapMode: Text.WordWrap
-                font.pixelSize: Math.floor(root.height * 0.5)
+                font.pixelSize: Math.floor(root.height * 0.3)
                 font.bold: root.fontBold
                 font.family: root.fontFamily
                 verticalAlignment: Text.AlignVCenter
@@ -61,20 +62,21 @@ Rectangle {
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: root.elementSpacing * 0.2
+            spacing: root.elementSpacing
 
             Image {
                 source: root._pressedTag ? root.sourcePressed : root.source
-                visible: !root.sourcePressed && !root.source
+                visible: root.sourcePressed || root.source
                 fillMode: Image.PreserveAspectFit
-                Layout.preferredHeight: root.width * 0.2
+                Layout.preferredWidth: root.width * 0.5
+                Layout.preferredHeight: root.width * 0.5
                 Layout.alignment: Qt.AlignHCenter
             }
             Text {
                 text: root.text
                 color: root._pressedTag ? root.textPressedColor : root.textColor
                 wrapMode: Text.WordWrap
-                font.pixelSize: Math.floor(root.width * 0.5)
+                font.pixelSize: Math.floor(root.width * 0.25)
                 font.bold: root.fontBold
                 font.family: root.fontFamily
                 verticalAlignment: Text.AlignVCenter

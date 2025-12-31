@@ -16,7 +16,7 @@ Rectangle {
     readonly property int selfWidth: ComponentConf.landScape ? parent.width * 0.5 : parent.width * 0.8
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
     readonly property string textColor: ThemeManager.currentTheme["textColor"]
-    readonly property int elementRadius: ElementStyle.elementRadius
+    readonly property int elementRadius: ElementStyle.elementRadius * 2
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property int fontSize: ThemeFont.fontSize["XL"]
     readonly property string fontFamily: ThemeFont.fontFamily
