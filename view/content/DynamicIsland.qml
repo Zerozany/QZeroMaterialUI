@@ -12,8 +12,8 @@ Rectangle {
     color: root.elementColor
     radius: root.elementRadius
 
-    readonly property int selfWidth: ComponentConf.landScape ? parent.Window.window.contentItem.width * 0.4 : parent.Window.window.contentItem.width * 0.4
-    readonly property int selfHeight: ComponentConf.landScape ? parent.Window.window.contentItem.height * 0.05 : parent.Window.window.contentItem.height * 0.025
+    readonly property int selfWidth: ComponentConf.landScape ? Overlay.overlay.width * 0.4 : Overlay.overlay.width * 0.4
+    readonly property int selfHeight: ComponentConf.landScape ? Overlay.overlay.height * 0.05 : Overlay.overlay.height * 0.025
     readonly property int elementRadius: ElementStyle.elementRadius * 4
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
 
@@ -23,32 +23,39 @@ Rectangle {
 
     MouseArea {
         parent: Overlay.overlay
-        anchors.fill: parent
-        enabled: root.clickedAnimationStart || root.pressedAnimationStart
-        onClicked: {
-            root.clickedAnimationStart = false;
-            root.pressedAnimationStart = false;
-            root.animationEnd = true;
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
+        anchors.fill: root.clickedAnimationStart || root.pressedAnimationStart ? parent : root
         pressAndHoldInterval: 300
+        propagateComposedEvents: true
 
-        onClicked: {
-            if (root.pressedAnimationStart) {
-                return;
+        onClicked: function (_mouse) {
+            var localPos = root.mapFromItem(parent, _mouse.x, _mouse.y);
+            if (root.contains(localPos)) {
+                if (root.pressedAnimationStart) {
+                    return;
+                }
+                root.clickedAnimationStart = false;
+                root.clickedAnimationStart = true;
+            } else {
+                root.clickedAnimationStart = false;
+                root.pressedAnimationStart = false;
+                root.animationEnd = true;
             }
-            root.clickedAnimationStart = false;
-            root.clickedAnimationStart = true;
         }
 
-        onPressAndHold: {
-            root.clickedAnimationStart = false;
-            root.pressedAnimationStart = false;
-            root.pressedAnimationStart = true;
+        onPressAndHold: function (_mouse) {
+            var localPos = root.mapFromItem(parent, _mouse.x, _mouse.y);
+            if (root.contains(localPos)) {
+                if (root.pressedAnimationStart) {
+                    return;
+                }
+                root.clickedAnimationStart = false;
+                root.pressedAnimationStart = false;
+                root.pressedAnimationStart = true;
+            } else {
+                root.clickedAnimationStart = false;
+                root.pressedAnimationStart = false;
+                root.animationEnd = true;
+            }
         }
     }
 
