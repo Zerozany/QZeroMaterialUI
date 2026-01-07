@@ -16,15 +16,16 @@ Rectangle {
     readonly property int selfHeight: ComponentConf.landScape ? Overlay.overlay.height * 0.05 : Overlay.overlay.height * 0.025
     readonly property int elementRadius: ElementStyle.elementRadius * 4
     readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
+    readonly property int pressAndHoldInterval: 300
 
     property bool clickedAnimationStart: false
     property bool pressedAnimationStart: false
     property bool animationEnd: false
 
     MouseArea {
-        parent: Overlay.overlay
-        anchors.fill: root.clickedAnimationStart || root.pressedAnimationStart ? parent : root
-        pressAndHoldInterval: 300
+        parent: root.clickedAnimationStart || root.pressedAnimationStart ? Overlay.overlay : root
+        anchors.fill: parent
+        pressAndHoldInterval: root.pressAndHoldInterval
         propagateComposedEvents: true
 
         onClicked: function (_mouse) {
