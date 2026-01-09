@@ -90,7 +90,12 @@ Rectangle {
         anchors.fill: parent
 
         onClicked: function (_mouse) {
-            var localPos = passwordImage.mapFromItem(parent, _mouse.x, _mouse.y);
+            var localPos = inputText.mapFromItem(parent, _mouse.x, _mouse.y);
+            if (inputText.contains(localPos)) {
+                inputText.forceActiveFocus(true);
+                return;
+            }
+            localPos = passwordImage.mapFromItem(parent, _mouse.x, _mouse.y);
             if (root.password && passwordImage.contains(localPos)) {
                 root.__switchPasswordVisible();
                 return;
@@ -100,11 +105,7 @@ Rectangle {
                 inputText.clear();
                 return;
             }
-            localPos = inputText.mapFromItem(parent, _mouse.x, _mouse.y);
-            if (inputText.contains(localPos)) {
-                inputText.focus = true;
-                return;
-            }
+
             localPos = root.mapFromItem(parent, _mouse.x, _mouse.y);
             if (!root.contains(localPos)) {
                 inputText.focus = false;

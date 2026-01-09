@@ -5,8 +5,8 @@ file(GLOB SRCFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 file(GLOB QMLFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "${CMAKE_CURRENT_SOURCE_DIR}/view/content/*.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/view/content/**/*.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/view/**/*.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/view/**/**/*.qml"
 )
 
 file(GLOB QMLSINGLETONS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -22,7 +22,7 @@ set_source_files_properties(
 qt_add_qml_module(${PROJECT_NAME}
     URI "${PROJECT_NAME}"
     VERSION 1.0
-    QML_FILES ${QMLFILES} ${QMLSINGLETONS}
+    QML_FILES ${QMLFILES}
     SOURCES ${SRCFILES}
 )
 

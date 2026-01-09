@@ -11,6 +11,8 @@ namespace Themes
         {"elementColor", "#FFFFFF"},
         {"borderColor", "#cdcdcd"},
         {"labelColor", "transparent"},
+        {"loginPageColor", "#7FFFD4"},
+
     };
 
 }  // namespace Themes
