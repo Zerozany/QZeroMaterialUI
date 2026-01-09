@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Rectangle {
     id: root
     color: root.elementColor
-    border.color: inputText.activeFocus ? "black" : "#DCDCDC"
+    border.color: inputText.activeFocus ? "black" : "transparent"
     radius: root.elementRadius
 
     property url source: ""
@@ -50,9 +50,6 @@ Rectangle {
             passwordCharacter: root.passwordCharacter
             color: root.textColor
             font.letterSpacing: root.elementSpacing * 0.5
-            font.pixelSize: parent.height * 0.3
-            leftPadding: 0
-            rightPadding: 0
             verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -61,6 +58,14 @@ Rectangle {
                 border.color: "transparent"
                 color: "transparent"
             }
+
+            onActiveFocusChanged: {
+                if (activeFocus) {
+                    cursorPosition = text.length;
+                    return;
+                }
+                cursorPosition = 0;
+            }
         }
 
         Image {
@@ -68,15 +73,13 @@ Rectangle {
             source: root.clearSource
             Layout.preferredWidth: root.height * 0.5
             Layout.preferredHeight: root.height * 0.5
-            Layout.rightMargin: root.password ? 0 : root.elementMargins
             Layout.alignment: Qt.AlignVCenter
             fillMode: Image.Pad
         }
 
         Image {
             id: passwordImage
-            source: root.passwordSource
-            visible: root.password
+            source: root.password ? root.passwordSource : ""
             Layout.preferredWidth: root.height * 0.5
             Layout.preferredHeight: root.height * 0.5
             Layout.rightMargin: root.elementMargins
@@ -105,7 +108,6 @@ Rectangle {
                 inputText.clear();
                 return;
             }
-
             localPos = root.mapFromItem(parent, _mouse.x, _mouse.y);
             if (!root.contains(localPos)) {
                 inputText.focus = false;
