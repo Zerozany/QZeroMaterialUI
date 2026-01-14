@@ -89,13 +89,14 @@ Rectangle {
     }
 
     MouseArea {
-        parent: inputText.activeFocus ? Overlay.overlay : root
+        parent: inputText.activeFocus ? root.Window.window.contentItem : root
         anchors.fill: parent
+        // propagateComposedEvents: true
 
         onClicked: function (_mouse) {
             var localPos = inputText.mapFromItem(parent, _mouse.x, _mouse.y);
             if (inputText.contains(localPos)) {
-                inputText.forceActiveFocus(true);
+                inputText.forceActiveFocus();
                 return;
             }
             localPos = passwordImage.mapFromItem(parent, _mouse.x, _mouse.y);
@@ -110,7 +111,8 @@ Rectangle {
             }
             localPos = root.mapFromItem(parent, _mouse.x, _mouse.y);
             if (!root.contains(localPos)) {
-                inputText.focus = false;
+                // inputText.focus = false;
+                root.parent.forceActiveFocus();
                 return;
             }
         }
