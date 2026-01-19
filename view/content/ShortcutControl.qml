@@ -1,28 +1,23 @@
 import QtQuick
 
-Item {
-    id: root
-
-    property var sequences: null
+Shortcut {
+    sequences: []
     signal windowsEvent
     signal androidEvent
     signal iosEvent
 
-    Shortcut {
-        sequences: root.sequences
-        onActivated: {
-            if (Qt.platform.os === "windows") {
-                root.windowsEvent();
-                return;
-            }
-            if (Qt.platform.os === "ios") {
-                root.iosEvent();
-                return;
-            }
-            if (Qt.platform.os === "android") {
-                root.androidEvent();
-                return;
-            }
+    onActivated: {
+        if (Qt.platform.os === "windows") {
+            windowsEvent();
+            return;
+        }
+        if (Qt.platform.os === "ios") {
+            iosEvent();
+            return;
+        }
+        if (Qt.platform.os === "android") {
+            androidEvent();
+            return;
         }
     }
 }
