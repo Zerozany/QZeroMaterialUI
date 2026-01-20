@@ -7,7 +7,7 @@ import QtQuick.Controls.Material.impl
 T.TextField {
     id: root
     leftPadding: root.height * 0.5 + root.elementMargins * 2
-    rightPadding: root.height + root.elementMargins * 2
+    rightPadding: root.height + root.elementMargins * 2.5
     color: enabled && activeFocus ? root.textColor : Material.hintTextColor
     selectionColor: root.borderColor
     selectedTextColor: root.constSelectedTextColor
@@ -19,9 +19,9 @@ T.TextField {
     }
 
     property url source: ""
-    property url passwordSource: ""
-    property url pressedPasswordSource: ""
-    property url clearSource: ""
+    property url lockSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/Lock.png"
+    property url unlockSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/UnLock.png"
+    property url clearSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/Clear.png"
     property color borderColor: "#7FFFD4"
 
     readonly property string textColor: ThemeManager.currentTheme["textColor"]
@@ -60,7 +60,7 @@ T.TextField {
         width: root.childElementSize.width
         height: root.childElementSize.height
         anchors.right: root.right
-        anchors.rightMargin: root.elementMargins + root.childElementSize.width
+        anchors.rightMargin: root.elementMargins * 1.5 + root.childElementSize.width
         anchors.verticalCenter: parent.verticalCenter
         verticalAlignment: Text.AlignVCenter
         fillMode: Image.Pad
@@ -74,7 +74,7 @@ T.TextField {
     }
 
     Image {
-        source: root.passwordSource
+        source: root.lockSource
         width: root.childElementSize.width
         height: root.childElementSize.height
         anchors.right: parent.right
@@ -86,7 +86,7 @@ T.TextField {
             anchors.fill: parent
             onClicked: {
                 root.echoMode = root.echoMode === TextInput.Password ? TextInput.Normal : TextInput.Password;
-                parent.source = parent.source === root.passwordSource ? root.pressedPasswordSource : root.passwordSource;
+                parent.source = parent.source === root.lockSource ? root.unlockSource : root.lockSource;
             }
         }
 
