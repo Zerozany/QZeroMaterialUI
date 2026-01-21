@@ -10,8 +10,8 @@ ThemeManager* ThemeManager::create(QQmlEngine*, QJSEngine*)
 ThemeManager::ThemeManager(QObject* _parent) : QObject{_parent}
 {
     std::invoke(&ThemeManager::init, this);
-    std::invoke(&ThemeManager::setInitTheme, this);
     std::invoke(&ThemeManager::connectSignal2Slot, this);
+    std::invoke(&ThemeManager::setInitTheme, this);
 }
 
 auto ThemeManager::init() noexcept -> void

@@ -58,8 +58,8 @@ private Q_SLOTS:
     void onCurrentThemeNameChanged();
 
 private:
-    QDir        m_themesDir{QDir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)}.filePath("Themes")};
-    QString     m_themeConfigDir{QDir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)}.filePath("ThemeConfig.ini")};
+    QDir        m_themesDir{QDir(qApp->applicationDirPath()).filePath("Themes")};
+    QString     m_themeConfigDir{QDir(qApp->applicationDirPath()).filePath("ThemeConfig.ini")};
     QStringList m_themesList{};
     QVariantMap m_currentTheme{};
     QString     m_currentThemeName{};
