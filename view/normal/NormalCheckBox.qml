@@ -5,7 +5,7 @@ import QtQuick.Controls.Material.impl
 
 T.CheckBox {
     id: root
-    implicitWidth: indicator.implicitWidth + contentItem.implicitWidth + root.elementSpacing
+    implicitWidth: contentItem.implicitWidth
     implicitHeight: indicator.implicitHeight
 
     property string textColor: ThemeManager.currentTheme["textColor"]
