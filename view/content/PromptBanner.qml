@@ -15,8 +15,8 @@ Rectangle {
     property int interval: 2000
 
     readonly property int selfWidth: ComponentConf.landScape ? parent.width * 0.5 : parent.width * 0.8
-    readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
-    readonly property string textColor: ThemeManager.currentTheme["textColor"]
+    readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
+    readonly property string textColor: ThemeManager.currentTheme["TextColor"]
     readonly property int elementRadius: ElementStyle.elementRadius * 2
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property int fontSize: ThemeFont.fontSize["XL"]

@@ -24,7 +24,7 @@ T.TextField {
     property url clearSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/Clear.png"
     property color borderColor: "#7FFFD4"
 
-    readonly property string textColor: ThemeManager.currentTheme["textColor"]
+    readonly property string textColor: ThemeManager.currentTheme["TextColor"]
     readonly property int elementMargins: ElementStyle.elementMargins * 2
     readonly property string constSelectedTextColor: "white"
     readonly property size childElementSize: Qt.size(root.height * 0.5, root.height * 0.5)

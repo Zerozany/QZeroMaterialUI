@@ -14,7 +14,7 @@ Rectangle {
     readonly property int bottomEdge: 1
     readonly property int leftEdge: 2
     readonly property int rightEdge: 3
-    readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
+    readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
     readonly property int elementRadius: ElementStyle.elementRadius
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property bool landScape: parent.width > parent.height

@@ -7,8 +7,8 @@ Rectangle {
 
     property string text: ""
 
-    readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
-    readonly property string textColor: ThemeManager.currentTheme["textColor"]
+    readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
+    readonly property string textColor: ThemeManager.currentTheme["TextColor"]
     readonly property int elementRadius: ElementStyle.elementRadius
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property int elementSpacing: ElementStyle.elementSpacing

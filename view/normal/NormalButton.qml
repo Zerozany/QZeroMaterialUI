@@ -16,8 +16,8 @@ T.Button {
         radius: root.radius
     }
 
-    property string color: ThemeManager.currentTheme["elementColor"]
-    property string textColor: ThemeManager.currentTheme["textColor"]
+    property string color: ThemeManager.currentTheme["ElementColor"]
+    property string textColor: ThemeManager.currentTheme["TextColor"]
     property int radius: ElementStyle.elementRadius
     property string rippleColor: ""
 

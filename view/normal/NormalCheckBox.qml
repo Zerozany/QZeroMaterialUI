@@ -8,7 +8,7 @@ T.CheckBox {
     implicitWidth: contentItem.implicitWidth
     implicitHeight: indicator.implicitHeight
 
-    property string textColor: ThemeManager.currentTheme["textColor"]
+    property string textColor: ThemeManager.currentTheme["TextColor"]
     property string boxColor: "#7FFFD4"
     property int radius: 2
 

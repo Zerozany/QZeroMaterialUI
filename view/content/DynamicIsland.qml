@@ -15,7 +15,7 @@ Rectangle {
     readonly property int selfWidth: ComponentConf.landScape ? Overlay.overlay.width * 0.4 : Overlay.overlay.width * 0.4
     readonly property int selfHeight: ComponentConf.landScape ? Overlay.overlay.height * 0.05 : Overlay.overlay.height * 0.025
     readonly property int elementRadius: ElementStyle.elementRadius * 4
-    readonly property string elementColor: ThemeManager.currentTheme["elementColor"]
+    readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
     readonly property int pressAndHoldInterval: 300
 
     property int __dynamicIslandIndex: 0
