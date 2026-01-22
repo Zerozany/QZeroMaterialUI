@@ -15,8 +15,8 @@ Popup {
     }
 
     property string date: ""
-    readonly property int selfWidth: ComponentConf.landScape ? parent.Window.window.contentItem.width * 0.6 : parent.Window.window.contentItem.width * 0.7
-    readonly property int selfHeight: ComponentConf.landScape ? parent.Window.window.contentItem.height * 0.6 : parent.Window.window.contentItem.height * 0.4
+    readonly property int selfWidth: ContentConf.landScape ? parent.Window.window.contentItem.width * 0.6 : parent.Window.window.contentItem.width * 0.7
+    readonly property int selfHeight: ContentConf.landScape ? parent.Window.window.contentItem.height * 0.6 : parent.Window.window.contentItem.height * 0.4
     readonly property int elementRadius: ElementStyle.elementRadius * 20
     readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
     readonly property int visibleItemCount: 7

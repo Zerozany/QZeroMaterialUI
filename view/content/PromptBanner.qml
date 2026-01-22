@@ -6,7 +6,7 @@ Rectangle {
     parent: Overlay.overlay
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
-    anchors.topMargin: ComponentConf.landScape ? parent.height * 0.2 : parent.height * 0.1
+    anchors.topMargin: ContentConf.landScape ? parent.height * 0.2 : parent.height * 0.1
     width: root.selfWidth
     radius: root.elementRadius
     color: root.elementColor
@@ -14,7 +14,7 @@ Rectangle {
     property string text: ""
     property int interval: 2000
 
-    readonly property int selfWidth: ComponentConf.landScape ? parent.width * 0.5 : parent.width * 0.8
+    readonly property int selfWidth: ContentConf.landScape ? parent.width * 0.5 : parent.width * 0.8
     readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
     readonly property string textColor: ThemeManager.currentTheme["TextColor"]
     readonly property int elementRadius: ElementStyle.elementRadius * 2

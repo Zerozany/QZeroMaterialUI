@@ -5,15 +5,15 @@ Rectangle {
     id: root
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
-    anchors.topMargin: ComponentConf.landScape ? parent.height * 0.025 : parent.height * 0.015
+    anchors.topMargin: ContentConf.landScape ? parent.height * 0.025 : parent.height * 0.015
     parent: Overlay.overlay
     width: root.selfWidth
     height: root.selfHeight
     color: root.elementColor
     radius: root.elementRadius
 
-    readonly property int selfWidth: ComponentConf.landScape ? Overlay.overlay.width * 0.4 : Overlay.overlay.width * 0.4
-    readonly property int selfHeight: ComponentConf.landScape ? Overlay.overlay.height * 0.05 : Overlay.overlay.height * 0.025
+    readonly property int selfWidth: ContentConf.landScape ? Overlay.overlay.width * 0.4 : Overlay.overlay.width * 0.4
+    readonly property int selfHeight: ContentConf.landScape ? Overlay.overlay.height * 0.05 : Overlay.overlay.height * 0.025
     readonly property int elementRadius: ElementStyle.elementRadius * 4
     readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
     readonly property int pressAndHoldInterval: 300
