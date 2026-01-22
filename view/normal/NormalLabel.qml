@@ -19,7 +19,7 @@ T.Label {
     property url source: ""
     property int borderWidth: 1
     property int radius: ElementStyle.elementRadius
-    property string borderColor: "red"
+    property string borderColor: ThemeManager.currentTheme["LabelColor"]
     property string labelColor: ThemeManager.currentTheme["LabelColor"]
 
     readonly property bool isPortrait: root.width <= root.height
