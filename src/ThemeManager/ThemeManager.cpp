@@ -1,5 +1,9 @@
 #include "ThemeManager.h"
 #include <QSettings>
+#include <ranges>
+
+static constexpr const char* LIGHTFILENAME{"Light"};
+static constexpr const char* DARDFILENAME{"Dark"};
 
 ThemeManager* ThemeManager::create(QQmlEngine*, QJSEngine*)
 {
@@ -26,21 +30,20 @@ auto ThemeManager::initThemeConfig() noexcept -> void
     settings.beginGroup("Theme");
     if (!settings.contains("ThemeName"))
     {
-        settings.setValue("ThemeName", "Light");
+        settings.setValue("ThemeName", LIGHTFILENAME);
     }
     this->setCurrentThemeName(settings.value("ThemeName").toString());
     settings.endGroup();
 }
 
-QStringList ThemeManager::getThemesList() noexcept
+QStringList ThemeManager::getThemesList()
 {
-    m_themesList.clear();
+    QStringList tmpThemesList{};
     for (const QFileInfo& info : m_themesDir.entryInfoList({"*.ini"}, QDir::Files | QDir::NoDotAndDotDot))
     {
-        m_themesList << info.baseName();
+        tmpThemesList << info.baseName();
     }
-    qDebug() << m_themesList;
-    return m_themesList;
+    return tmpThemesList;
 }
 
 auto ThemeManager::connectSignal2Slot() noexcept -> void
@@ -54,11 +57,10 @@ void ThemeManager::onCurrentThemeNameChanged()
         QVariantMap tmpThemeMap{};
         QSettings   settings{m_themesDir.filePath(QString("%1.ini").arg(_themeName)), QSettings::IniFormat};
         settings.beginGroup("Colors");
-        tmpThemeMap["BackgroundColor"] = settings.value("BackgroundColor", m_lightTheme["BackgroundColor"]);
-        tmpThemeMap["TextColor"]       = settings.value("TextColor", m_lightTheme["TextColor"]);
-        tmpThemeMap["ButtonColor"]     = settings.value("ButtonColor", m_lightTheme["ButtonColor"]);
-        tmpThemeMap["ElementColor"]    = settings.value("ElementColor", m_lightTheme["ElementColor"]);
-        tmpThemeMap["LabelColor"]      = settings.value("LabelColor", m_lightTheme["LabelColor"]);
+        for (const auto& key : m_lightTheme.toStdMap() | std::views::keys)
+        {
+            tmpThemeMap[key] = settings.value(key, m_lightTheme[key]);
+        }
         settings.endGroup();
         return tmpThemeMap;
     }};
@@ -72,54 +74,28 @@ void ThemeManager::onCurrentThemeNameChanged()
 
 auto ThemeManager::setLightTheme() noexcept -> void
 {
-    QSettings settings{m_themesDir.filePath(QString("%1.ini").arg("Light")), QSettings::IniFormat};
+    QSettings settings{m_themesDir.filePath(QString("%1.ini").arg(LIGHTFILENAME)), QSettings::IniFormat};
     settings.beginGroup("Colors");
-    if (!settings.contains("BackgroundColor"))
+    for (const auto& key : m_lightTheme.toStdMap() | std::views::keys)
     {
-        settings.setValue("BackgroundColor", m_lightTheme["BackgroundColor"]);
-    }
-    if (!settings.contains("TextColor"))
-    {
-        settings.setValue("TextColor", m_lightTheme["TextColor"]);
-    }
-    if (!settings.contains("ButtonColor"))
-    {
-        settings.setValue("ButtonColor", m_lightTheme["ButtonColor"]);
-    }
-    if (!settings.contains("ElementColor"))
-    {
-        settings.setValue("ElementColor", m_lightTheme["ElementColor"]);
-    }
-    if (!settings.contains("LabelColor"))
-    {
-        settings.setValue("LabelColor", m_lightTheme["LabelColor"]);
+        if (!settings.contains(key))
+        {
+            settings.setValue(key, m_lightTheme[key]);
+        }
     }
     settings.endGroup();
 }
 
 auto ThemeManager::setDarkTheme() noexcept -> void
 {
-    QSettings settings{m_themesDir.filePath(QString("%1.ini").arg("Dark")), QSettings::IniFormat};
+    QSettings settings{m_themesDir.filePath(QString("%1.ini").arg(DARDFILENAME)), QSettings::IniFormat};
     settings.beginGroup("Colors");
-    if (!settings.contains("BackgroundColor"))
+    for (const auto& key : m_lightTheme.toStdMap() | std::views::keys)
     {
-        settings.setValue("BackgroundColor", m_darkTheme["BackgroundColor"]);
-    }
-    if (!settings.contains("TextColor"))
-    {
-        settings.setValue("TextColor", m_darkTheme["TextColor"]);
-    }
-    if (!settings.contains("ButtonColor"))
-    {
-        settings.setValue("ButtonColor", m_darkTheme["ButtonColor"]);
-    }
-    if (!settings.contains("ElementColor"))
-    {
-        settings.setValue("ElementColor", m_darkTheme["ElementColor"]);
-    }
-    if (!settings.contains("LabelColor"))
-    {
-        settings.setValue("LabelColor", m_darkTheme["LabelColor"]);
+        if (!settings.contains(key))
+        {
+            settings.setValue(key, m_darkTheme[key]);
+        }
     }
     settings.endGroup();
 }

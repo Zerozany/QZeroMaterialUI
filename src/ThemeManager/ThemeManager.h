@@ -15,6 +15,18 @@ _Pragma("once");
     #define QZERO_API
 #endif
 
+static constexpr const char* THEMESDIRNAME{"Themes"};
+static constexpr const char* THEMESCONFIGNAME{"ThemeConfig.ini"};
+
+namespace ThemeColorName
+{
+    static constexpr const char* BackgroundColor{"BackgroundColor"};
+    static constexpr const char* TextColor{"TextColor"};
+    static constexpr const char* ButtonColor{"ButtonColor"};
+    static constexpr const char* ElementColor{"ElementColor"};
+    static constexpr const char* LabelColor{"LabelColor"};
+};  // namespace ThemeColorName
+
 class QZERO_API ThemeManager : public QObject
 {
     Q_OBJECT
@@ -35,7 +47,7 @@ public:
     Q_INVOKABLE void    setCurrentThemeName(const QString& _currentThemeName);
 
 public:
-    Q_INVOKABLE QStringList getThemesList() noexcept;
+    Q_INVOKABLE QStringList getThemesList();
 
 private:
     explicit(true) ThemeManager(QObject* _parent = nullptr);
@@ -60,30 +72,29 @@ private Q_SLOTS:
 
 private:
 #if defined(Q_OS_WINDOWS)
-    QDir    m_themesDir{QDir(qApp->applicationDirPath()).filePath("Themes")};
-    QString m_themeConfigDir{QDir(qApp->applicationDirPath()).filePath("ThemeConfig.ini")};
+    QDir    m_themesDir{QDir(qApp->applicationDirPath()).filePath(THEMESDIRNAME)};
+    QString m_themeConfigDir{QDir(qApp->applicationDirPath()).filePath(THEMESCONFIGNAME)};
 #elif defined(Q_OS_ANDROID)
-    QDir    m_themesDir{QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Themes")};
-    QString m_themeConfigDir{QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("ThemeConfig.ini")};
+    QDir    m_themesDir{QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath(THEMESDIRNAME)};
+    QString m_themeConfigDir{QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath(THEMESCONFIGNAME)};
 #endif
-    QStringList m_themesList{};
     QVariantMap m_currentTheme{};
     QString     m_currentThemeName{};
 
 private:
     QVariantMap m_lightTheme{
-        {"BackgroundColor", "#f0efee"},
-        {"TextColor", "#0e0d0d"},
-        {"ButtonColor", "#FFFFFF"},
-        {"ElementColor", "#FFFFFF"},
-        {"LabelColor", "transparent"},
+        {ThemeColorName::BackgroundColor, "#f0efee"},
+        {ThemeColorName::TextColor, "#0e0d0d"},
+        {ThemeColorName::ButtonColor, "#FFFFFF"},
+        {ThemeColorName::ElementColor, "#FFFFFF"},
+        {ThemeColorName::LabelColor, "transparent"},
     };
 
     QVariantMap m_darkTheme{
-        {"BackgroundColor", "#131212"},
-        {"TextColor", "#FFFFFF"},
-        {"ButtonColor", "#FFFFFF"},
-        {"ElementColor", "rgb(100, 94, 94)"},
-        {"LabelColor", "transparent"},
+        {ThemeColorName::BackgroundColor, "#131212"},
+        {ThemeColorName::TextColor, "#FFFFFF"},
+        {ThemeColorName::ButtonColor, "#FFFFFF"},
+        {ThemeColorName::ElementColor, "rgb(100, 94, 94)"},
+        {ThemeColorName::LabelColor, "transparent"},
     };
 };
