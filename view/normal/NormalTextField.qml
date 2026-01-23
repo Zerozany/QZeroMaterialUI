@@ -19,9 +19,9 @@ T.TextField {
     }
 
     property url source: ""
-    property url lockSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/Lock.png"
-    property url unlockSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/UnLock.png"
-    property url clearSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/NormalTextField/Clear.png"
+    property url lockSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/normalTextField/lock.png"
+    property url unlockSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/normalTextField/unLock.png"
+    property url clearSource: "qrc:/qt/qml/QZeroZanyUI/view/resource/normalTextField/clear.png"
     property color borderColor: "#7FFFD4"
 
     readonly property string textColor: ThemeManager.currentTheme["TextColor"]
