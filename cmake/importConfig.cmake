@@ -8,6 +8,11 @@ target_compile_definitions(${PROJECT_NAME}
     QZeroMaterialUI
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    MACOSX_BUNDLE "$<$<CONFIG:Release>:TRUE>$<$<NOT:$<CONFIG:Release>>:FALSE>"
+    WIN32_EXECUTABLE "$<$<CONFIG:Debug>:FALSE>$<$<NOT:$<CONFIG:Debug>>:TRUE>"
+)
+
 set(QT_QML_GENERATE_QMLLS_INI ON)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -19,12 +24,26 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if(MSVC)
     target_compile_options(${PROJECT_NAME}
         PRIVATE
-        "$<$<CXX_COMPILER_ID:MSVC>:/Z7>"
+        "$<$<CONFIG:Debug>:/Z7>"
     )
 
     target_compile_options(${PROJECT_NAME}
         PRIVATE
         "/utf-8"
         "/FS"
+    )
+
+    target_compile_options(${PROJECT_NAME}
+        PRIVATE
+        "$<$<CONFIG:Debug>:/Od>"
+        "$<$<CONFIG:Release>:/Ox>"
+    )
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        "-fdiagnostics-color=always" # 彩色输出诊断信息
+        "-Wall" # 开启大部分警告
+        "-Wextra" # 更多警告
+        "$<$<CONFIG:Debug>:-O0>" # Debug 禁用优化
+        "$<$<CONFIG:Release>:-O3>" # Release 最大优化
     )
 endif()

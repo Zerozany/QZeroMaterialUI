@@ -27,17 +27,17 @@ set_source_files_properties(
 qt_add_qml_module(${PROJECT_NAME}
     URI "${PROJECT_NAME}"
     VERSION 1.0
+    SHARED
     QML_FILES ${QMLFILES}
     SOURCES ${SRCFILES}
     RESOURCES ${RESOURCESLIST}
 )
 
-file(GLOB INCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/src/*")
-
-foreach(HEADERDIR ${INCLUDEDIR})
-    if(NOT IS_DIRECTORY ${HEADERDIR})
-        continue()
-    endif()
-
-    target_include_directories(${PROJECT_NAME} PUBLIC ${HEADERDIR})
-endforeach()
+file(GLOB INCLUDEDIR
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*/"
+)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+    ${INCLUDEDIR}
+)
