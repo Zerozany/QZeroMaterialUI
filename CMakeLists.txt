@@ -8,6 +8,6 @@ project(${PROJECT_NAME}
 )
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/importQt.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/importQConf.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/importSource.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/importBuild.cmake")
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/importQConf.cmake")
