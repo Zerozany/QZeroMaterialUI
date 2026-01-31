@@ -11,6 +11,8 @@ _Pragma("once");
     #else
         #define QZERO_API Q_DECL_IMPORT
     #endif
+#elif defined(__GNUC__) || defined(__clang__)
+    #define QZERO_API __attribute__((visibility("default")))
 #else
     #define QZERO_API
 #endif
