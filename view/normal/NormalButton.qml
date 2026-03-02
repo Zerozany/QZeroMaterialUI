@@ -22,7 +22,7 @@ T.Button {
 
     readonly property int elementSpacing: ElementStyle.elementSpacing
     readonly property string fontFamily: ThemeFont.fontFamily
-    readonly property var elementScale: root.pressed ? 0.9 : 1.0
+    readonly property var elementScale: root.pressed ? 0.95 : 1.0
     readonly property var elementOpacity: root.pressed ? 0.6 : 1.0
     readonly property int scaleDuration: 120
 
