@@ -9,35 +9,25 @@ Popup {
     width: parent.width * 0.5
     height: parent.height * 0.5
     background: Rectangle {
-        color: "white"
-        radius: root.backgroundRadius
+        color: root.elementColor
+        radius: root.elementRadius
         opacity: root.backgroundOpacity
     }
 
-    readonly property int backgroundRadius: 5
+    property string message: ""
     readonly property double backgroundOpacity: 0.3
-    readonly property int textMargins: 10
-    readonly property int textSpacing: 5
-    readonly property string textColor: "black"
-    readonly property int textFontSize: 14
+    readonly property int elementRadius: ElementStyle.elementRadius
+    readonly property int elementMargins: ElementStyle.elementMargins * 2
+    readonly property int elementSpacing: ElementStyle.elementSpacing
+    readonly property string textColor: ThemeManager.currentTheme["TextColor"]
+    readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
+    readonly property int fontSize: ThemeFont.fontSize["XL"]
     readonly property int maxMessagesCount: 1000
-
-    function appendLog(_message) {
-        let finalText = "[" + Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss") + "] : " + _message;
-        logTextComponent.createObject(column, {
-            text: finalText
-        });
-        if (column.children.length > root.maxMessagesCount) {
-            column.children[0].destroy();
-        }
-        flick.contentY = Math.max(0, flick.contentHeight - flick.height);
-        root.open();
-    }
 
     Flickable {
         id: flick
         anchors.fill: parent
-        anchors.margins: root.textMargins
+        anchors.margins: root.elementMargins
         contentWidth: width
         contentHeight: column.height
         clip: true
@@ -46,7 +36,7 @@ Popup {
         Column {
             id: column
             width: flick.width
-            spacing: root.textSpacing
+            spacing: root.elementSpacing
         }
     }
 
@@ -57,7 +47,18 @@ Popup {
             width: column.width
             wrapMode: Text.WrapAnywhere
             color: root.textColor
-            font.pixelSize: root.textFontSize
+            font.pixelSize: root.fontSize
         }
+    }
+
+    onMessageChanged: {
+        logTextComponent.createObject(column, {
+            text: message
+        });
+        if (column.children.length > root.maxMessagesCount) {
+            column.children[0].destroy();
+        }
+        flick.contentY = Math.max(0, flick.contentHeight - flick.height);
+        root.open();
     }
 }
