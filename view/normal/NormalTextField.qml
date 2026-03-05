@@ -17,6 +17,20 @@ T.TextField {
     cursorDelegate: CursorDelegate {
         color: root.borderColor
     }
+    background: MaterialTextContainer {
+        implicitWidth: root.height
+        implicitHeight: root.Material.textFieldHeight
+        filled: root.Material.containerStyle === Material.Filled
+        fillColor: root.Material.textFieldFilledContainerColor
+        outlineColor: (enabled && root.hovered) ? root.Material.primaryTextColor : root.Material.hintTextColor
+        focusedOutlineColor: root.borderColor
+        placeholderTextWidth: Math.min(placeholder.width, placeholder.implicitWidth) * placeholder.scale
+        placeholderTextHAlign: root.effectiveHorizontalAlignment
+        controlHasActiveFocus: root.activeFocus
+        controlHasText: root.length > 0
+        placeholderHasText: placeholder.text.length > 0
+        horizontalPadding: root.Material.textFieldHorizontalPadding
+    }
 
     property url source: ""
     property url lockSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/lock.png"
@@ -95,21 +109,6 @@ T.TextField {
                 visible = false;
             }
         }
-    }
-
-    background: MaterialTextContainer {
-        implicitWidth: root.height
-        implicitHeight: root.Material.textFieldHeight
-        filled: root.Material.containerStyle === Material.Filled
-        fillColor: root.Material.textFieldFilledContainerColor
-        outlineColor: (enabled && root.hovered) ? root.Material.primaryTextColor : root.Material.hintTextColor
-        focusedOutlineColor: root.borderColor
-        placeholderTextWidth: Math.min(placeholder.width, placeholder.implicitWidth) * placeholder.scale
-        placeholderTextHAlign: root.effectiveHorizontalAlignment
-        controlHasActiveFocus: root.activeFocus
-        controlHasText: root.length > 0
-        placeholderHasText: placeholder.text.length > 0
-        horizontalPadding: root.Material.textFieldHorizontalPadding
     }
 
     MouseArea {
