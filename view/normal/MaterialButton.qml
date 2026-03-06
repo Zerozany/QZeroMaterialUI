@@ -18,6 +18,7 @@ T.Button {
     horizontalPadding: root.flat ? 0 : Material.buttonVerticalPadding
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+    icon.color: Material.foreground
 
     property int radius: ElementStyle.elementRadius * 2
 
@@ -33,7 +34,7 @@ T.Button {
     background: Rectangle {
         implicitWidth: root.buttonimplicitSize.width
         implicitHeight: root.buttonimplicitSize.height
-        color: root.down ? Material.accentColor : Material.background
+        color: Material.background
         radius: root.radius
         layer.enabled: root.enabled && color.a > 0 && !root.flat
         layer.effect: RoundedElevationEffect {
