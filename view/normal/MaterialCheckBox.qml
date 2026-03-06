@@ -8,25 +8,16 @@ T.CheckBox {
     implicitWidth: contentItem.implicitWidth
     implicitHeight: indicator.implicitHeight
 
-    property string textColor: ThemeManager.currentTheme["TextColor"]
-    property string boxColor: "#7FFFD4"
     property int radius: 2
 
     readonly property int elementSpacing: ElementStyle.elementSpacing
-    readonly property int boxSize: 18
-    readonly property real boxRippleOpacity: 0.3
-    readonly property string boxBackgroundColor: "transparent"
+    readonly property size boxSize: Qt.size(18, 18)
 
     indicator: CheckIndicator {
-        width: root.boxSize
-        height: root.boxSize
+        width: root.boxSize.width
+        height: root.boxSize.height
         control: root
-        enabled: root.enabled
         radius: root.radius
-        color: root.boxBackgroundColor
-        border.color: !control.enabled ? control.Material.hintTextColor : checkState !== Qt.Unchecked ? root.boxColor : control.Material.secondaryTextColor
-        border.width: checkState !== Qt.Unchecked ? width / 2 : 2
-        anchors.verticalCenter: root.verticalCenter
 
         Ripple {
             x: (parent.width - width) / 2
@@ -35,21 +26,19 @@ T.CheckBox {
             anchor: root
             width: root.indicator.width * 2
             height: root.indicator.height * 2
-            pressed: root.pressed
-            active: root.enabled && (root.down || root.hovered)
-            color: root.boxColor
-            opacity: root.boxRippleOpacity
+            pressed: root.pressed || root.hovered
+            active: enabled && (root.down || root.visualFocus || root.hovered)
+            color: root.checked ? Material.highlightedRippleColor : Material.rippleColor
         }
     }
 
     contentItem: Text {
         text: root.text
         height: root.indicator.height
-        color: root.textColor
+        color: root.enabled ? Material.foreground : Material.hintTextColor
         font: root.font
         elide: Text.ElideRight
         leftPadding: root.indicator.width + root.elementSpacing
         verticalAlignment: Text.AlignVCenter
-        anchors.verticalCenter: parent.verticalCenter
     }
 }
