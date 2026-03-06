@@ -25,6 +25,7 @@ class QZERO_API ElementStyle : public QObject
     Q_PROPERTY(quint8 elementMargins READ elementMargins WRITE setElementMargins NOTIFY elementMarginsChanged);
     Q_PROPERTY(quint8 elementRadius READ elementRadius WRITE setElementRadius NOTIFY elementRadiusChanged);
     Q_PROPERTY(quint8 elementSpacing READ elementSpacing WRITE setElementSpacing NOTIFY elementSpacingChanged);
+    Q_PROPERTY(quint8 elementPadding READ elementPadding WRITE setElementPadding NOTIFY elementPaddingChanged);
 
 public:
     static ElementStyle* create(QQmlEngine*, QJSEngine*);
@@ -39,6 +40,9 @@ public:
     Q_INVOKABLE quint8 elementSpacing() const;
     Q_INVOKABLE void   setElementSpacing(quint8 _elementSpacing);
 
+    Q_INVOKABLE quint8 elementPadding() const;
+    Q_INVOKABLE void   setElementPadding(quint8 _elementPadding);
+
 private:
     explicit(true) ElementStyle(QObject* _parent = nullptr);
 
@@ -50,8 +54,11 @@ Q_SIGNALS:
 
     void elementSpacingChanged();
 
+    void elementPaddingChanged();
+
 private:
     quint8 m_elementMargins{5};
     quint8 m_elementRadius{5};
     quint8 m_elementSpacing{5};
+    quint8 m_elementPadding{5};
 };

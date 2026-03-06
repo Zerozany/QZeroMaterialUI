@@ -54,3 +54,18 @@ void ElementStyle::setElementSpacing(quint8 _elementSpacing)
     m_elementSpacing = _elementSpacing;
     Q_EMIT this->elementSpacingChanged();
 }
+
+quint8 ElementStyle::elementPadding() const
+{
+    return m_elementPadding;
+}
+
+void ElementStyle::setElementPadding(quint8 _elementPadding)
+{
+    if (m_elementPadding == _elementPadding)
+    {
+        return;
+    }
+    m_elementPadding = _elementPadding;
+    Q_EMIT this->elementPaddingChanged();
+}

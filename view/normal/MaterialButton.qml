@@ -14,12 +14,17 @@ T.Button {
     icon.width: iconSize.width
     icon.height: iconSize.height
     display: root.width <= root.height ? AbstractButton.TextUnderIcon : AbstractButton.TextBesideIcon
+    verticalPadding: root.elementPadding
+    horizontalPadding: root.flat ? 0 : Material.buttonVerticalPadding
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
 
     property int radius: ElementStyle.elementRadius * 2
 
     readonly property size iconSize: Qt.size(24, 24)
     readonly property size buttonimplicitSize: Qt.size(64, Material.buttonHeight)
     readonly property int elementSpacing: ElementStyle.elementSpacing
+    readonly property int elementPadding: ElementStyle.elementPadding
     readonly property var elementScale: root.pressed ? 0.95 : 1.0
     readonly property var elementOpacity: root.pressed || !root.enabled ? 0.6 : 1.0
     readonly property int elevation: root.down ? 8 : 4
