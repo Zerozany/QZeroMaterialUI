@@ -27,7 +27,7 @@ T.Button {
     readonly property int elementPadding: ElementStyle.elementPadding
     readonly property var elementScale: root.pressed ? 0.95 : 1.0
     readonly property var elementOpacity: root.pressed || !root.enabled ? 0.6 : 1.0
-    readonly property int elevation: root.down ? 8 : 4
+    readonly property int elevation: root.down ? 8 : 2
     readonly property int scaleDuration: 120
 
     background: Rectangle {
