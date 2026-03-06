@@ -18,7 +18,7 @@ T.Button {
     horizontalPadding: root.flat ? 0 : Material.buttonVerticalPadding
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-    icon.color: Material.foreground
+    icon.color: !enabled ? Material.hintTextColor : (root.flat && root.highlighted) || (root.checked && !root.highlighted) ? Material.accentColor : highlighted ? Material.primaryHighlightedTextColor : Material.foreground
 
     property int radius: ElementStyle.elementRadius * 2
 
@@ -34,7 +34,7 @@ T.Button {
     background: Rectangle {
         implicitWidth: root.buttonimplicitSize.width
         implicitHeight: root.buttonimplicitSize.height
-        color: Material.background
+        color: root.Material.buttonColor(root.Material.theme, root.Material.background, root.Material.accent, root.enabled, root.flat, root.highlighted, root.checked)
         radius: root.radius
         layer.enabled: root.enabled && color.a > 0 && !root.flat
         layer.effect: RoundedElevationEffect {
@@ -50,7 +50,7 @@ T.Button {
         icon: root.icon
         text: root.text
         font: root.font
-        color: Material.foreground
+        color: !root.enabled ? root.Material.hintTextColor : (root.flat && root.highlighted) || (root.checked && !root.highlighted) ? root.Material.accentColor : root.highlighted ? root.Material.primaryHighlightedTextColor : root.Material.foreground
     }
 
     Ripple {
