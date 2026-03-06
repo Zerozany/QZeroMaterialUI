@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
-// import QtQuick.Layouts
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
 import QtQuick.Controls.Material
@@ -12,35 +11,30 @@ T.Button {
     scale: root.elementScale
     opacity: root.elementOpacity
     spacing: root.elementSpacing
-    icon.width: 24
-    icon.height: 24
+    icon.width: iconSize.width
+    icon.height: iconSize.height
     display: root.width <= root.height ? AbstractButton.TextUnderIcon : AbstractButton.TextBesideIcon
+
+    property int radius: ElementStyle.elementRadius * 2
+
+    readonly property size iconSize: Qt.size(24, 24)
+    readonly property size buttonimplicitSize: Qt.size(64, Material.buttonHeight)
+    readonly property int elementSpacing: ElementStyle.elementSpacing
+    readonly property var elementScale: root.pressed ? 0.95 : 1.0
+    readonly property var elementOpacity: root.pressed || !root.enabled ? 0.6 : 1.0
+    readonly property int elevation: root.down ? 8 : 4
+    readonly property int scaleDuration: 120
+
     background: Rectangle {
-        color: root.Material.background
+        implicitWidth: root.buttonimplicitSize.width
+        implicitHeight: root.buttonimplicitSize.height
+        color: root.down ? Material.accentColor : Material.background
         radius: root.radius
         layer.enabled: root.enabled && color.a > 0 && !root.flat
         layer.effect: RoundedElevationEffect {
-            elevation: root.Material.elevation
+            elevation: root.elevation
             roundedScale: root.radius
         }
-    }
-    Material.elevation: root.down ? 8 : 4
-
-    property int radius: ElementStyle.elementRadius
-
-    readonly property string textColor: root.Material.foreground
-    readonly property int elementSpacing: ElementStyle.elementSpacing
-    readonly property var elementScale: root.pressed ? 0.95 : 1.0
-    readonly property var elementOpacity: root.pressed ? 0.6 : 1.0
-    readonly property int scaleDuration: 120
-
-    Ripple {
-        clip: true
-        anchors.fill: parent
-        clipRadius: root.radius
-        pressed: root.pressed
-        active: enabled && (root.down || root.visualFocus || root.hovered)
-        color: root.flat && root.highlighted ? root.Material.highlightedRippleColor : root.Material.rippleColor
     }
 
     contentItem: IconLabel {
@@ -50,7 +44,17 @@ T.Button {
         icon: root.icon
         text: root.text
         font: root.font
-        color: !root.enabled ? root.Material.hintTextColor : (root.flat && root.highlighted) || (root.checked && !root.highlighted) ? root.Material.accentColor : root.highlighted ? root.Material.primaryHighlightedTextColor : root.Material.foreground
+        color: Material.foreground
+    }
+
+    Ripple {
+        clip: true
+        anchors.fill: parent
+        enabled: !root.flat
+        clipRadius: root.radius
+        pressed: root.pressed || root.hovered
+        active: enabled && (root.down || root.visualFocus || root.hovered)
+        color: root.highlighted ? root.Material.highlightedRippleColor : root.Material.rippleColor
     }
 
     Behavior on scale {
