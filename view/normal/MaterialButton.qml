@@ -34,7 +34,7 @@ T.Button {
     background: Rectangle {
         implicitWidth: root.buttonimplicitSize.width
         implicitHeight: root.buttonimplicitSize.height
-        color: root.Material.buttonColor(Material.theme, Material.background, Material.accent, root.enabled, root.flat, root.highlighted, root.checked)
+        color: Material.buttonColor(Material.theme, Material.background, Material.accent, root.enabled, root.flat, root.highlighted, root.checked)
         radius: root.radius
         layer.enabled: root.enabled && color.a > 0 && !root.flat
         layer.effect: RoundedElevationEffect {
