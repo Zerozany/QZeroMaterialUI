@@ -11,8 +11,8 @@ T.Button {
     scale: root.elementScale
     opacity: root.elementOpacity
     spacing: root.elementSpacing
-    icon.width: iconSize.width
-    icon.height: iconSize.height
+    icon.width: root.iconSize.width
+    icon.height: root.iconSize.height
     display: root.width <= root.height ? AbstractButton.TextUnderIcon : AbstractButton.TextBesideIcon
     verticalPadding: root.elementPadding
     horizontalPadding: root.flat ? 0 : Material.buttonVerticalPadding
@@ -34,7 +34,7 @@ T.Button {
     background: Rectangle {
         implicitWidth: root.buttonimplicitSize.width
         implicitHeight: root.buttonimplicitSize.height
-        color: root.Material.buttonColor(root.Material.theme, root.Material.background, root.Material.accent, root.enabled, root.flat, root.highlighted, root.checked)
+        color: root.Material.buttonColor(Material.theme, Material.background, Material.accent, root.enabled, root.flat, root.highlighted, root.checked)
         radius: root.radius
         layer.enabled: root.enabled && color.a > 0 && !root.flat
         layer.effect: RoundedElevationEffect {
@@ -50,7 +50,7 @@ T.Button {
         icon: root.icon
         text: root.text
         font: root.font
-        color: !root.enabled ? root.Material.hintTextColor : (root.flat && root.highlighted) || (root.checked && !root.highlighted) ? root.Material.accentColor : root.highlighted ? root.Material.primaryHighlightedTextColor : root.Material.foreground
+        color: !root.enabled ? Material.hintTextColor : (root.flat && root.highlighted) || (root.checked && !root.highlighted) ? Material.accentColor : root.highlighted ? Material.primaryHighlightedTextColor : Material.foreground
     }
 
     Ripple {
@@ -60,7 +60,7 @@ T.Button {
         clipRadius: root.radius
         pressed: root.pressed || root.hovered
         active: enabled && (root.down || root.visualFocus || root.hovered)
-        color: root.highlighted ? root.Material.highlightedRippleColor : root.Material.rippleColor
+        color: root.highlighted ? Material.highlightedRippleColor : Material.rippleColor
     }
 
     Behavior on scale {
