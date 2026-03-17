@@ -78,9 +78,8 @@ T.TextField {
         verticalAlignment: Text.AlignVCenter
         fillMode: Image.Pad
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
+        TapHandler {
+            onTapped: {
                 root.clear();
             }
         }
@@ -94,13 +93,15 @@ T.TextField {
         anchors.rightMargin: root.elementMargins
         anchors.verticalCenter: parent.verticalCenter
         fillMode: Image.PreserveAspectFit
-        enabled: root.echoMode === TextInput.Password
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
+        TapHandler {
+            onTapped: {
                 root.echoMode = root.echoMode === TextInput.Password ? TextInput.Normal : TextInput.Password;
             }
+        }
+
+        Component.onCompleted: {
+            visible = root.echoMode !== TextInput.Password ? false : true;
         }
     }
 
