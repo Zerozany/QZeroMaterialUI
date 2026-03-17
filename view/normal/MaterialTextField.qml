@@ -24,10 +24,11 @@ T.TextField {
     property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
 
     readonly property int elementMargins: ElementStyle.elementMargins * 2
-    readonly property size childElementSize: Qt.size(root.height * 0.5, root.height * 0.5)
+    readonly property size imageSize: Qt.size(root.height * 0.5, root.height * 0.5)
+    readonly property int materialTextContainerWidht: 300
 
     background: MaterialTextContainer {
-        implicitWidth: 300
+        implicitWidth: root.materialTextContainerWidht
         implicitHeight: Material.textFieldHeight
         filled: parent.Material.containerStyle === Material.Filled
         fillColor: Material.textFieldFilledContainerColor
@@ -58,24 +59,22 @@ T.TextField {
 
     Image {
         source: root.leftSource
-        width: root.childElementSize.width
-        height: root.childElementSize.height
+        width: root.imageSize.width
+        height: root.imageSize.height
         anchors.left: parent.left
         anchors.leftMargin: root.elementMargins
         anchors.verticalCenter: parent.verticalCenter
-        verticalAlignment: Text.AlignVCenter
         fillMode: Image.PreserveAspectFit
         visible: source.toString().length > 0
     }
 
     Image {
         source: root.clearSource
-        width: root.childElementSize.width
-        height: root.childElementSize.height
+        width: root.imageSize.width
+        height: root.imageSize.height
         anchors.right: root.right
-        anchors.rightMargin: root.elementMargins * 1.5 + root.childElementSize.width
+        anchors.rightMargin: root.elementMargins * 1.5 + root.imageSize.width
         anchors.verticalCenter: parent.verticalCenter
-        verticalAlignment: Text.AlignVCenter
         fillMode: Image.Pad
 
         TapHandler {
@@ -87,8 +86,8 @@ T.TextField {
 
     Image {
         source: root.rightSource
-        width: root.childElementSize.width
-        height: root.childElementSize.height
+        width: root.imageSize.width
+        height: root.imageSize.height
         anchors.right: parent.right
         anchors.rightMargin: root.elementMargins
         anchors.verticalCenter: parent.verticalCenter
@@ -107,9 +106,9 @@ T.TextField {
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            cursorPosition = text.length;
+            root.cursorPosition = text.length;
             return;
         }
-        cursorPosition = 0;
+        root.cursorPosition = 0;
     }
 }
