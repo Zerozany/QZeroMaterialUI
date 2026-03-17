@@ -1,4 +1,3 @@
-pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Templates as T
 import QtQuick.Controls.Material
@@ -6,42 +5,41 @@ import QtQuick.Controls.Material.impl
 
 T.TextField {
     id: root
-    leftPadding: root.height * 0.5 + root.elementMargins * 2
+    implicitWidth: implicitBackgroundWidth + leftInset + rightInset || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
+    leftPadding: leftSource.toString().length > 0 ? root.height * 0.5 + root.elementMargins * 2 : root.elementMargins
     rightPadding: root.height + root.elementMargins * 2.5
-    color: enabled && activeFocus ? root.textColor : Material.hintTextColor
-    selectionColor: root.borderColor
-    selectedTextColor: root.constSelectedTextColor
-    placeholderTextColor: enabled && activeFocus ? root.textColor : Material.hintTextColor
+    color: enabled && activeFocus ? Material.foreground : Material.hintTextColor
+    selectionColor: Material.foreground
+    selectedTextColor: Material.primaryHighlightedTextColor
+    placeholderTextColor: enabled && activeFocus ? Material.accentColor : Material.hintTextColor
     verticalAlignment: TextInput.AlignVCenter
     Material.containerStyle: Material.Outlined
     cursorDelegate: CursorDelegate {
-        color: root.borderColor
+        color: Material.foreground
     }
+
+    property url leftSource: ""
+    property url rightSource: ""
+    property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
+
+    readonly property int elementMargins: ElementStyle.elementMargins * 2
+    readonly property size childElementSize: Qt.size(root.height * 0.5, root.height * 0.5)
+
     background: MaterialTextContainer {
-        implicitWidth: root.height
-        implicitHeight: root.Material.textFieldHeight
-        filled: root.Material.containerStyle === Material.Filled
-        fillColor: root.Material.textFieldFilledContainerColor
-        outlineColor: (enabled && root.hovered) ? root.Material.primaryTextColor : root.Material.hintTextColor
-        focusedOutlineColor: root.borderColor
+        implicitWidth: 300
+        implicitHeight: Material.textFieldHeight
+        filled: parent.Material.containerStyle === Material.Filled
+        fillColor: Material.textFieldFilledContainerColor
+        outlineColor: (enabled && root.hovered) ? Material.foreground : Material.hintTextColor
+        focusedOutlineColor: Material.foreground
         placeholderTextWidth: Math.min(placeholder.width, placeholder.implicitWidth) * placeholder.scale
         placeholderTextHAlign: root.effectiveHorizontalAlignment
         controlHasActiveFocus: root.activeFocus
         controlHasText: root.length > 0
         placeholderHasText: placeholder.text.length > 0
-        horizontalPadding: root.Material.textFieldHorizontalPadding
+        horizontalPadding: Material.textFieldHorizontalPadding
     }
-
-    property url source: ""
-    property url lockSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/lock.png"
-    property url unlockSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/unLock.png"
-    property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
-    property color borderColor: "#7FFFD4"
-
-    readonly property string textColor: ThemeManager.currentTheme["TextColor"]
-    readonly property int elementMargins: ElementStyle.elementMargins * 2
-    readonly property string constSelectedTextColor: "white"
-    readonly property size childElementSize: Qt.size(root.height * 0.5, root.height * 0.5)
 
     FloatingPlaceholderText {
         id: placeholder
@@ -55,11 +53,11 @@ T.TextField {
         controlImplicitBackgroundHeight: root.implicitBackgroundHeight
         controlHeight: root.height
         leftPadding: root.leftPadding
-        floatingLeftPadding: root.Material.textFieldHorizontalPadding
+        floatingLeftPadding: Material.textFieldHorizontalPadding
     }
 
     Image {
-        source: root.source
+        source: root.leftSource
         width: root.childElementSize.width
         height: root.childElementSize.height
         anchors.left: parent.left
@@ -67,6 +65,7 @@ T.TextField {
         anchors.verticalCenter: parent.verticalCenter
         verticalAlignment: Text.AlignVCenter
         fillMode: Image.PreserveAspectFit
+        visible: source.toString().length > 0
     }
 
     Image {
@@ -88,39 +87,19 @@ T.TextField {
     }
 
     Image {
-        source: root.lockSource
+        source: root.rightSource
         width: root.childElementSize.width
         height: root.childElementSize.height
         anchors.right: parent.right
         anchors.rightMargin: root.elementMargins
         anchors.verticalCenter: parent.verticalCenter
         fillMode: Image.PreserveAspectFit
+        enabled: root.echoMode === TextInput.Password
 
         MouseArea {
             anchors.fill: parent
             onClicked: {
                 root.echoMode = root.echoMode === TextInput.Password ? TextInput.Normal : TextInput.Password;
-                parent.source = parent.source === root.lockSource ? root.unlockSource : root.lockSource;
-            }
-        }
-
-        Component.onCompleted: {
-            if (root.echoMode !== TextInput.Password) {
-                visible = false;
-            }
-        }
-    }
-
-    MouseArea {
-        parent: root.enabled && root.activeFocus ? root.Window.window.contentItem : root
-        anchors.fill: parent
-        z: -99
-
-        onClicked: function (_mouse) {
-            var localPos = root.mapFromItem(parent, _mouse.x, _mouse.y);
-            if (!root.contains(localPos)) {
-                root.focus = false;
-                return;
             }
         }
     }
