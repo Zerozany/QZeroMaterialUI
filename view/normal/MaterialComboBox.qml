@@ -20,10 +20,8 @@ T.ComboBox {
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property size indicatorSize: Qt.size(10, 10)
     readonly property url indicatorSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalComboBox/cursor.png"
-    readonly property int backgroundWidth: 120
-
-    Material.background: flat ? "transparent" : undefined
-    Material.foreground: flat ? undefined : Material.primaryTextColor
+    readonly property int backgroundWidth: 150
+    readonly property int elevation: 4
 
     delegate: MenuItem {
         required property var model
@@ -39,7 +37,7 @@ T.ComboBox {
     indicator: ColorImage {
         x: root.mirrored ? root.elementPadding : root.width - width - root.elementPadding
         y: root.topPadding + (root.availableHeight - height) / 2
-        color: root.enabled ? Material.foreground : Material.hintTextColor
+        color: root.enabled && activeFocus ? Material.foreground : Material.hintTextColor
         source: root.indicatorSource
         fillMode: Image.PreserveAspectFit
         width: root.indicatorSize.width
@@ -65,21 +63,21 @@ T.ComboBox {
         inputMethodHints: root.inputMethodHints
         validator: root.validator
         selectByMouse: root.selectTextByMouse
-        color: root.enabled ? root.Material.foreground : root.Material.hintTextColor
-        selectionColor: root.Material.accentColor
-        selectedTextColor: root.Material.primaryHighlightedTextColor
+        color: enabled && activeFocus ? Material.foreground : Material.hintTextColor
+        selectionColor: Material.foreground
+        selectedTextColor: Material.primaryHighlightedTextColor
         verticalAlignment: Text.AlignVCenter
         cursorDelegate: CursorDelegate {}
     }
 
     background: MaterialTextContainer {
         implicitWidth: root.backgroundWidth
-        implicitHeight: root.Material.textFieldHeight
-        outlineColor: (enabled && root.hovered) ? root.Material.primaryTextColor : root.Material.hintTextColor
-        focusedOutlineColor: root.Material.accentColor
+        implicitHeight: Material.textFieldHeight
+        outlineColor: (enabled && root.hovered) ? Material.foreground : Material.hintTextColor
+        focusedOutlineColor: Material.foreground
         controlHasActiveFocus: root.activeFocus
         controlHasText: true
-        horizontalPadding: root.Material.textFieldHorizontalPadding
+        horizontalPadding: Material.textFieldHorizontalPadding
     }
 
     popup: T.Popup {
@@ -90,40 +88,6 @@ T.ComboBox {
         topMargin: root.elementMargins
         bottomMargin: root.elementMargins
         verticalPadding: root.elementPadding
-
-        Material.theme: root.Material.theme
-        Material.accent: root.Material.accent
-        Material.primary: root.Material.primary
-
-        enter: Transition {
-            NumberAnimation {
-                property: "scale"
-                from: 0.9
-                easing.type: Easing.OutQuint
-                duration: 220
-            }
-            NumberAnimation {
-                property: "opacity"
-                from: 0.0
-                easing.type: Easing.OutCubic
-                duration: 150
-            }
-        }
-
-        exit: Transition {
-            NumberAnimation {
-                property: "scale"
-                to: 0.9
-                easing.type: Easing.OutQuint
-                duration: 220
-            }
-            NumberAnimation {
-                property: "opacity"
-                to: 0.0
-                easing.type: Easing.OutCubic
-                duration: 150
-            }
-        }
 
         contentItem: ListView {
             clip: true
@@ -136,10 +100,10 @@ T.ComboBox {
 
         background: Rectangle {
             radius: root.radius
-            color: parent.Material.dialogColor
+            color: Material.dialogColor
             layer.enabled: root.enabled
             layer.effect: RoundedElevationEffect {
-                elevation: 4
+                elevation: root.elevation
                 roundedScale: Material.ExtraSmallScale
             }
         }
