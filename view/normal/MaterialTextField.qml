@@ -76,6 +76,7 @@ T.TextField {
         anchors.rightMargin: root.elementMargins * 1.5 + root.imageSize.width
         anchors.verticalCenter: parent.verticalCenter
         fillMode: Image.Pad
+        scale: 0.5
 
         TapHandler {
             onTapped: {
