@@ -7,7 +7,7 @@ T.TextField {
     id: root
     implicitWidth: implicitBackgroundWidth + leftInset + rightInset || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
-    leftPadding: leftSource.toString().length > 0 ? root.height * 0.5 + root.elementMargins * 2 : root.elementMargins
+    leftPadding: option ? root.height * 0.5 + root.elementMargins * 2 : root.elementMargins
     rightPadding: root.height + root.elementMargins * 2.5
     color: enabled && activeFocus ? Material.foreground : Material.hintTextColor
     selectionColor: Material.foreground
@@ -19,10 +19,10 @@ T.TextField {
         color: Material.foreground
     }
 
-    property url leftSource: ""
-    property url rightSource: ""
-    property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
+    property Component option: null
+    property url passwordSource: ""
 
+    readonly property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
     readonly property int elementMargins: ElementStyle.elementMargins * 2
     readonly property size imageSize: Qt.size(root.height * 0.5, root.height * 0.5)
     readonly property int materialTextContainerWidht: 300
@@ -57,15 +57,14 @@ T.TextField {
         floatingLeftPadding: Material.textFieldHorizontalPadding
     }
 
-    Image {
-        source: root.leftSource
+    Loader {
         width: root.imageSize.width
         height: root.imageSize.height
         anchors.left: parent.left
         anchors.leftMargin: root.elementMargins
         anchors.verticalCenter: parent.verticalCenter
-        fillMode: Image.PreserveAspectFit
-        visible: source.toString().length > 0
+        sourceComponent: root.option
+        visible: root.option !== null
     }
 
     Image {
@@ -86,7 +85,7 @@ T.TextField {
     }
 
     Image {
-        source: root.rightSource
+        source: root.passwordSource
         width: root.imageSize.width
         height: root.imageSize.height
         anchors.right: parent.right
