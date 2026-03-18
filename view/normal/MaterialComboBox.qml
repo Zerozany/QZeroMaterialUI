@@ -22,6 +22,7 @@ T.ComboBox {
     readonly property url indicatorSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalComboBox/cursor.png"
     readonly property int backgroundWidth: 150
     readonly property int elevation: 4
+    readonly property int duration: 50
 
     delegate: MenuItem {
         required property var model
@@ -37,7 +38,7 @@ T.ComboBox {
     indicator: ColorImage {
         x: root.mirrored ? root.elementPadding : root.width - width - root.elementPadding
         y: root.topPadding + (root.availableHeight - height) / 2
-        color: root.enabled && activeFocus ? Material.foreground : Material.hintTextColor
+        color: root.enabled && root.activeFocus ? Material.foreground : Material.hintTextColor
         source: root.indicatorSource
         fillMode: Image.PreserveAspectFit
         width: root.indicatorSize.width
@@ -46,7 +47,7 @@ T.ComboBox {
 
         Behavior on rotation {
             NumberAnimation {
-                duration: 50
+                duration: root.duration
                 easing.type: Easing.OutCubic
             }
         }
