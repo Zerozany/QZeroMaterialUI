@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Templates as T
+import QtQuick.Controls.impl
 import QtQuick.Controls.Material
 import QtQuick.Controls.Material.impl
 
@@ -26,6 +27,7 @@ T.TextField {
     readonly property int elementMargins: ElementStyle.elementMargins * 2
     readonly property size imageSize: Qt.size(root.height * 0.5, root.height * 0.5)
     readonly property int materialTextContainerWidht: 300
+    readonly property real imageScale: 0.5
 
     background: MaterialTextContainer {
         implicitWidth: root.materialTextContainerWidht
@@ -67,15 +69,16 @@ T.TextField {
         visible: root.option !== null
     }
 
-    Image {
+    ColorImage {
         source: root.clearSource
         width: root.imageSize.width
         height: root.imageSize.height
+        color: root.color
+        scale: root.imageScale
         anchors.right: root.right
         anchors.rightMargin: root.elementMargins * 1.5 + root.imageSize.width
         anchors.verticalCenter: parent.verticalCenter
         fillMode: Image.PreserveAspectFit
-        scale: 0.5
 
         TapHandler {
             onTapped: {
@@ -84,10 +87,11 @@ T.TextField {
         }
     }
 
-    Image {
+    ColorImage {
         source: root.passwordSource
         width: root.imageSize.width
         height: root.imageSize.height
+        color: root.color
         anchors.right: parent.right
         anchors.rightMargin: root.elementMargins
         anchors.verticalCenter: parent.verticalCenter

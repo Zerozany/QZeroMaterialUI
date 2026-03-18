@@ -76,7 +76,8 @@ T.ComboBox {
                 highlighted: root.currentIndex === index
 
                 onClicked: {
-                    root.currentIndex = index;
+                    // root.highlightedIndex = index;
+                    root.activated(index);
                     root.popup.close();
                 }
             }
