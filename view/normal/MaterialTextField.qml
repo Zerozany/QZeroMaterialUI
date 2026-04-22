@@ -8,7 +8,7 @@ T.TextField {
     id: root
     implicitWidth: implicitBackgroundWidth + leftInset + rightInset || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
-    leftPadding: option ? root.height * 0.5 + root.elementMargins * 2 : root.elementMargins
+    leftPadding: root.option ? root.height * 0.5 + root.elementMargins * 2 : root.elementMargins
     rightPadding: root.height + root.elementMargins * 2.5
     color: enabled && activeFocus ? Material.foreground : Material.hintTextColor
     selectionColor: Material.foreground
@@ -26,11 +26,11 @@ T.TextField {
     readonly property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
     readonly property int elementMargins: ElementStyle.elementMargins * 2
     readonly property size imageSize: Qt.size(root.height * 0.5, root.height * 0.5)
-    readonly property int materialTextContainerWidht: 300
+    readonly property int materialTextContainerWidth: 300
     readonly property real imageScale: 0.5
 
     background: MaterialTextContainer {
-        implicitWidth: root.materialTextContainerWidht
+        implicitWidth: root.materialTextContainerWidth
         implicitHeight: Material.textFieldHeight
         filled: parent.Material.containerStyle === Material.Filled
         fillColor: Material.textFieldFilledContainerColor
