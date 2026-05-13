@@ -44,11 +44,11 @@ public:
     static ThemeFont* create(QQmlEngine*, QJSEngine*);
     ~ThemeFont() noexcept = default;
 
-    Q_INVOKABLE QVariantMap fontSize() const;
-    Q_INVOKABLE void        setFontSize(const QVariantMap& _fontSize);
+    QVariantMap fontSize() const;
+    void        setFontSize(const QVariantMap& _fontSize);
 
-    Q_INVOKABLE QString fontFamily() const;
-    Q_INVOKABLE void    setFontFamily(const QString& _fontFamily);
+    QString fontFamily() const;
+    void    setFontFamily(const QString& _fontFamily);
 
 private:
     explicit(true) ThemeFont(QObject* _parent = nullptr);

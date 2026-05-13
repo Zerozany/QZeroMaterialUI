@@ -42,11 +42,11 @@ public:
 
     ~ThemeManager() noexcept = default;
 
-    Q_INVOKABLE QVariantMap currentTheme() const;
-    Q_INVOKABLE void        setCurrentTheme(const QVariantMap& _currentTheme);
+    QVariantMap currentTheme() const;
+    void        setCurrentTheme(const QVariantMap& _currentTheme);
 
-    Q_INVOKABLE QString currentThemeName() const;
-    Q_INVOKABLE void    setCurrentThemeName(const QString& _currentThemeName);
+    QString currentThemeName() const;
+    void    setCurrentThemeName(const QString& _currentThemeName);
 
 public:
     Q_INVOKABLE QStringList getThemesList();

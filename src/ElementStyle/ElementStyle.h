@@ -31,17 +31,17 @@ public:
     static ElementStyle* create(QQmlEngine*, QJSEngine*);
     ~ElementStyle() noexcept = default;
 
-    Q_INVOKABLE quint8 elementMargins() const;
-    Q_INVOKABLE void   setElementMargins(quint8 _elementMargins);
+    quint8 elementMargins() const;
+    void   setElementMargins(quint8 _elementMargins);
 
-    Q_INVOKABLE quint8 elementRadius() const;
-    Q_INVOKABLE void   setElementRadius(quint8 _elementRadius);
+    quint8 elementRadius() const;
+    void   setElementRadius(quint8 _elementRadius);
 
-    Q_INVOKABLE quint8 elementSpacing() const;
-    Q_INVOKABLE void   setElementSpacing(quint8 _elementSpacing);
+    quint8 elementSpacing() const;
+    void   setElementSpacing(quint8 _elementSpacing);
 
-    Q_INVOKABLE quint8 elementPadding() const;
-    Q_INVOKABLE void   setElementPadding(quint8 _elementPadding);
+    quint8 elementPadding() const;
+    void   setElementPadding(quint8 _elementPadding);
 
 private:
     explicit(true) ElementStyle(QObject* _parent = nullptr);
