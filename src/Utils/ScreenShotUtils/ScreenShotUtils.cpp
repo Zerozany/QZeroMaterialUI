@@ -21,8 +21,8 @@ namespace Private
 
 ScreenShotUtils* ScreenShotUtils::create(QQmlEngine*, QJSEngine*)
 {
-    static ScreenShotUtils* visibleUtils{new ScreenShotUtils{}};
-    return visibleUtils;
+    static ScreenShotUtils* screenShotUtils{new ScreenShotUtils{}};
+    return screenShotUtils;
 }
 
 ScreenShotUtils::ScreenShotUtils(QObject* _parent) : QObject{_parent}
@@ -87,6 +87,8 @@ void ScreenShotUtils::screenshotItem(QObject* _quickItem, const QString& _savePa
     {
         return;
     }
+    // TODO 1 内部lambda函数作为槽函数
+    // TODO 2 添加延时截图
     QSharedPointer<QQuickItemGrabResult> result{qobject_cast<QQuickItem*>(_quickItem)->grabToImage()};
     QObject::connect(result.data(), &QQuickItemGrabResult::ready, [result, _savePathDir] {
         QImage shootImage{result.data()->image()};
