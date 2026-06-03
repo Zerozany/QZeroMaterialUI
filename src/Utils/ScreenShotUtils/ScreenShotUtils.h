@@ -72,8 +72,6 @@ Q_SIGNALS:
 
     void imageFormatChanged();
 
-private Q_SLOTS:
-
 private:
     quint8      m_delay{};
     quint8      m_burstshotCount{};
