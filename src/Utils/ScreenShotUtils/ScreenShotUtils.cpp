@@ -10,27 +10,37 @@
 
 namespace Private
 {
-    static auto screenshotPrivate{[]<typename T>(quint8 _delay, const ScreenShotUtils* _screenShotUtils, const QString& _savePathDir, T&& _arg) noexcept -> void {
-        QPointer<QQuickWindow> window{qobject_cast<QQuickWindow*>(QGuiApplication::topLevelWindows().first())};
-        QTimer::singleShot(_delay, _screenShotUtils, [=] {
-            QImage shotImage{window->grabWindow()};
-            if constexpr (std::is_same_v<std::decay_t<T>, QRect>)
-            {
-                shotImage = shotImage.copy(_arg);
-            }
-            if (!QDir{_savePathDir}.mkpath("."))
-            {
-                return;
-            }
-            shotImage.save(QDir{_savePathDir}.filePath(QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz") + ".png"));
-        });
-    }};
+    static constexpr const char* ImageNameFormat{"yyyyMMdd_HHmmss_zzz"};
 
-    static auto screenshotItemPrivate{[]<typename T>(quint8 _delay, const ScreenShotUtils* _screenShotUtils, QObject* _quickItem, const QString& _savePathDir, T&& _arg) noexcept -> void {
-        QSharedPointer<QQuickItemGrabResult> result{qobject_cast<QQuickItem*>(_quickItem)->grabToImage()};
-        QObject::connect(result.data(), &QQuickItemGrabResult::ready, [=] {
-            QTimer::singleShot(_delay, _screenShotUtils, [=] {
-                QImage shotImage{result.data()->image()};
+    static auto imageFormatToString(const ScreenShotUtils::ImageFormat& _imageFormat) noexcept -> const QString
+    {
+        switch (_imageFormat)
+        {
+            case ScreenShotUtils::ImageFormat::PNG:
+            {
+                return ".png";
+            }
+            case ScreenShotUtils::ImageFormat::JPG:
+            {
+                return ".jpg";
+            }
+            case ScreenShotUtils::ImageFormat::JPEG:
+            {
+                return ".jpeg";
+            }
+            default:
+            {
+                std::unreachable();
+            }
+        }
+    }
+
+    static auto screenshotPrivate{[]<typename T>(const ScreenShotUtils* _screenShotUtils, const QString& _savePathDir, T&& _arg) noexcept -> void {
+        QPointer<QQuickWindow> window{qobject_cast<QQuickWindow*>(QGuiApplication::topLevelWindows().first())};
+        QTimer::singleShot(_screenShotUtils->delay(), _screenShotUtils, [=] {
+            for (int i{}; ++i <= _screenShotUtils->burstshotCount();)
+            {
+                QImage shotImage{window->grabWindow()};
                 if constexpr (std::is_same_v<std::decay_t<T>, QRect>)
                 {
                     shotImage = shotImage.copy(_arg);
@@ -39,7 +49,28 @@ namespace Private
                 {
                     return;
                 }
-                shotImage.save(QDir{_savePathDir}.filePath(QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz") + ".png"));
+                shotImage.save(QDir{_savePathDir}.filePath(QDateTime::currentDateTime().toString(Private::ImageNameFormat) + Private::imageFormatToString(_screenShotUtils->imageFormat())));
+            }
+        });
+    }};
+
+    static auto screenshotItemPrivate{[]<typename T>(const ScreenShotUtils* _screenShotUtils, QObject* _quickItem, const QString& _savePathDir, T&& _arg) noexcept -> void {
+        QSharedPointer<QQuickItemGrabResult> result{qobject_cast<QQuickItem*>(_quickItem)->grabToImage()};
+        QObject::connect(result.data(), &QQuickItemGrabResult::ready, [=] {
+            QTimer::singleShot(_screenShotUtils->delay(), _screenShotUtils, [=] {
+                for (int i{}; ++i <= _screenShotUtils->burstshotCount();)
+                {
+                    QImage shotImage{result.data()->image()};
+                    if constexpr (std::is_same_v<std::decay_t<T>, QRect>)
+                    {
+                        shotImage = shotImage.copy(_arg);
+                    }
+                    if (!QDir{_savePathDir}.mkpath("."))
+                    {
+                        return;
+                    }
+                    shotImage.save(QDir{_savePathDir}.filePath(QDateTime::currentDateTime().toString(Private::ImageNameFormat) + Private::imageFormatToString(_screenShotUtils->imageFormat())));
+                }
             });
         });
     }};
@@ -58,7 +89,7 @@ ScreenShotUtils::ScreenShotUtils(QObject* _parent) : QObject{_parent}
 
 void ScreenShotUtils::screenshot(const QString& _savePathDir)
 {
-    Private::screenshotPrivate.operator()<std::monostate>(this->m_delay, this, _savePathDir, std::monostate{});
+    Private::screenshotPrivate.operator()<std::monostate>(this, _savePathDir, std::monostate{});
 }
 
 void ScreenShotUtils::screenshot(quint16 _x, quint16 _y, quint16 _width, quint16 _height, const QString& _savePathDir)
@@ -67,7 +98,7 @@ void ScreenShotUtils::screenshot(quint16 _x, quint16 _y, quint16 _width, quint16
     {
         return;
     }
-    Private::screenshotPrivate.operator()<QRect>(this->m_delay, this, _savePathDir, QRect{_x, _y, _width, _height});
+    Private::screenshotPrivate.operator()<QRect>(this, _savePathDir, QRect{_x, _y, _width, _height});
 }
 
 void ScreenShotUtils::screenshot(const QRect& _rect, const QString& _savePathDir)
@@ -76,7 +107,7 @@ void ScreenShotUtils::screenshot(const QRect& _rect, const QString& _savePathDir
     {
         return;
     }
-    Private::screenshotPrivate.operator()<const QRect&>(this->m_delay, this, _savePathDir, _rect);
+    Private::screenshotPrivate.operator()<const QRect&>(this, _savePathDir, _rect);
 }
 
 void ScreenShotUtils::screenshotItem(QObject* _quickItem, const QString& _savePathDir)
@@ -85,7 +116,7 @@ void ScreenShotUtils::screenshotItem(QObject* _quickItem, const QString& _savePa
     {
         return;
     }
-    Private::screenshotItemPrivate.operator()<std::monostate>(this->m_delay, this, _quickItem, _savePathDir, std::monostate{});
+    Private::screenshotItemPrivate.operator()<std::monostate>(this, _quickItem, _savePathDir, std::monostate{});
 }
 
 void ScreenShotUtils::screenshotItem(QObject* _quickItem, quint16 _x, quint16 _y, quint16 _width, quint16 _height, const QString& _savePathDir)
@@ -98,7 +129,7 @@ void ScreenShotUtils::screenshotItem(QObject* _quickItem, quint16 _x, quint16 _y
     {
         return;
     }
-    Private::screenshotItemPrivate.operator()<QRect>(this->m_delay, this, _quickItem, _savePathDir, QRect{_x, _y, _width, _height});
+    Private::screenshotItemPrivate.operator()<QRect>(this, _quickItem, _savePathDir, QRect{_x, _y, _width, _height});
 }
 
 void ScreenShotUtils::screenshotItem(QObject* _quickItem, const QRect& _rect, const QString& _savePathDir)
@@ -111,7 +142,7 @@ void ScreenShotUtils::screenshotItem(QObject* _quickItem, const QRect& _rect, co
     {
         return;
     }
-    Private::screenshotItemPrivate.operator()<const QRect&>(this->m_delay, this, _quickItem, _savePathDir, _rect);
+    Private::screenshotItemPrivate.operator()<const QRect&>(this, _quickItem, _savePathDir, _rect);
 }
 
 quint8 ScreenShotUtils::delay() const
@@ -142,4 +173,19 @@ void ScreenShotUtils::setBurstshotCount(quint8 _burstshotCount)
     }
     m_burstshotCount = _burstshotCount;
     Q_EMIT this->burstshotCountChanged();
+}
+
+ScreenShotUtils::ImageFormat ScreenShotUtils::imageFormat() const
+{
+    return m_imageFormat;
+}
+
+void ScreenShotUtils::setImageFormat(const ScreenShotUtils::ImageFormat& _imageFormat)
+{
+    if (m_imageFormat == _imageFormat)
+    {
+        return;
+    }
+    m_imageFormat = _imageFormat;
+    Q_EMIT this->imageFormatChanged();
 }

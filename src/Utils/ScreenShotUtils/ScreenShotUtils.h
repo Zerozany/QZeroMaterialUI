@@ -19,8 +19,18 @@ class QZERO_API ScreenShotUtils : public QObject
     Q_OBJECT
     QML_SINGLETON
     QML_ELEMENT
+public:
+    enum class ImageFormat
+    {
+        PNG,
+        JPG,
+        JPEG
+    };
+    Q_ENUM(ImageFormat)
+
     Q_PROPERTY(quint8 delay READ delay WRITE setDelay NOTIFY delayChanged);
     Q_PROPERTY(quint8 burstshotCount READ burstshotCount WRITE setBurstshotCount NOTIFY burstshotCountChanged);
+    Q_PROPERTY(ImageFormat imageFormat READ imageFormat WRITE setImageFormat NOTIFY imageFormatChanged);
 
 public:
     static ScreenShotUtils* create(QQmlEngine*, QJSEngine*);
@@ -35,6 +45,9 @@ public:
 
     quint8 burstshotCount() const;
     void   setBurstshotCount(quint8 _burstshotCount);
+
+    ScreenShotUtils::ImageFormat imageFormat() const;
+    void                         setImageFormat(const ScreenShotUtils::ImageFormat& _imageFormat);
 
 public:
     Q_INVOKABLE void screenshot(const QString& _savePathDir);
@@ -57,7 +70,12 @@ Q_SIGNALS:
 
     void burstshotCountChanged();
 
+    void imageFormatChanged();
+
+private Q_SLOTS:
+
 private:
-    quint8 m_delay{};
-    quint8 m_burstshotCount{};
+    quint8      m_delay{};
+    quint8      m_burstshotCount{};
+    ImageFormat m_imageFormat{ImageFormat::PNG};
 };
