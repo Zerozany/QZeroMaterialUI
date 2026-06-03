@@ -20,6 +20,7 @@ class QZERO_API ScreenShotUtils : public QObject
     QML_SINGLETON
     QML_ELEMENT
     Q_PROPERTY(quint8 delay READ delay WRITE setDelay NOTIFY delayChanged);
+    Q_PROPERTY(quint8 burstshotCount READ burstshotCount WRITE setBurstshotCount NOTIFY burstshotCountChanged);
 
 public:
     static ScreenShotUtils* create(QQmlEngine*, QJSEngine*);
@@ -32,6 +33,9 @@ public:
     quint8 delay() const;
     void   setDelay(quint8 _delay);
 
+    quint8 burstshotCount() const;
+    void   setBurstshotCount(quint8 _burstshotCount);
+
 public:
     Q_INVOKABLE void screenshot(const QString& _savePathDir);
 
@@ -41,9 +45,9 @@ public:
 
     Q_INVOKABLE void screenshotItem(QObject* _quickItem, const QString& _savePathDir);
 
-    Q_INVOKABLE void screenshotItem(QObject* _quickItem, const QRect& _rect, const QString& _savePathDir);
-
     Q_INVOKABLE void screenshotItem(QObject* _quickItem, quint16 _x, quint16 _y, quint16 _width, quint16 _height, const QString& _savePathDir);
+
+    Q_INVOKABLE void screenshotItem(QObject* _quickItem, const QRect& _rect, const QString& _savePathDir);
 
 protected:
     explicit(true) ScreenShotUtils(QObject* _parent = nullptr);
@@ -51,6 +55,9 @@ protected:
 Q_SIGNALS:
     void delayChanged();
 
+    void burstshotCountChanged();
+
 private:
     quint8 m_delay{};
+    quint8 m_burstshotCount{};
 };
