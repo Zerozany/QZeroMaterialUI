@@ -56,6 +56,7 @@ T.Button {
         clip: true
         anchors.fill: parent
         enabled: !root.flat
+        visible: !root.flat
         clipRadius: root.radius
         pressed: root.pressed || root.hovered
         active: enabled && (root.down || root.visualFocus || root.hovered)
