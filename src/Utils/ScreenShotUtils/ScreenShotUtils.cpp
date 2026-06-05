@@ -38,7 +38,7 @@ namespace Private
     static auto screenshotPrivate{[]<typename T>(const ScreenShotUtils* _screenShotUtils, const QString& _savePathDir, T&& _arg) noexcept -> void {
         QPointer<QQuickWindow> window{qobject_cast<QQuickWindow*>(QGuiApplication::topLevelWindows().first())};
         QTimer::singleShot(_screenShotUtils->delay(), _screenShotUtils, [=] {
-            for (int i{}; ++i <= _screenShotUtils->burstshotCount();)
+            for (int i{}; ++i <= _screenShotUtils->burstshot();)
             {
                 QImage shotImage{window->grabWindow()};
                 if constexpr (std::is_same_v<std::decay_t<T>, QRect>)
@@ -58,7 +58,7 @@ namespace Private
         QSharedPointer<QQuickItemGrabResult> result{qobject_cast<QQuickItem*>(_quickItem)->grabToImage()};
         QObject::connect(result.data(), &QQuickItemGrabResult::ready, [=] {
             QTimer::singleShot(_screenShotUtils->delay(), _screenShotUtils, [=] {
-                for (int i{}; ++i <= _screenShotUtils->burstshotCount();)
+                for (int i{}; ++i <= _screenShotUtils->burstshot();)
                 {
                     QImage shotImage{result.data()->image()};
                     if constexpr (std::is_same_v<std::decay_t<T>, QRect>)
@@ -160,19 +160,19 @@ void ScreenShotUtils::setDelay(quint8 _delay)
     Q_EMIT this->delayChanged();
 }
 
-quint8 ScreenShotUtils::burstshotCount() const
+quint8 ScreenShotUtils::burstshot() const
 {
-    return m_burstshotCount;
+    return m_burstshot;
 }
 
-void ScreenShotUtils::setBurstshotCount(quint8 _burstshotCount)
+void ScreenShotUtils::setBurstshot(quint8 _burstshot)
 {
-    if (m_burstshotCount == _burstshotCount)
+    if (m_burstshot == _burstshot)
     {
         return;
     }
-    m_burstshotCount = _burstshotCount;
-    Q_EMIT this->burstshotCountChanged();
+    m_burstshot = _burstshot;
+    Q_EMIT this->burstshotChanged();
 }
 
 ScreenShotUtils::ImageFormat ScreenShotUtils::imageFormat() const

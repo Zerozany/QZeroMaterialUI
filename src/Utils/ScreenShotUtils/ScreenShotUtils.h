@@ -29,7 +29,7 @@ public:
     Q_ENUM(ImageFormat)
 
     Q_PROPERTY(quint8 delay READ delay WRITE setDelay NOTIFY delayChanged);
-    Q_PROPERTY(quint8 burstshotCount READ burstshotCount WRITE setBurstshotCount NOTIFY burstshotCountChanged);
+    Q_PROPERTY(quint8 burstshot READ burstshot WRITE setBurstshot NOTIFY burstshotChanged);
     Q_PROPERTY(ImageFormat imageFormat READ imageFormat WRITE setImageFormat NOTIFY imageFormatChanged);
 
 public:
@@ -43,8 +43,8 @@ public:
     quint8 delay() const;
     void   setDelay(quint8 _delay);
 
-    quint8 burstshotCount() const;
-    void   setBurstshotCount(quint8 _burstshotCount);
+    quint8 burstshot() const;
+    void   setBurstshot(quint8 _burstshot);
 
     ScreenShotUtils::ImageFormat imageFormat() const;
     void                         setImageFormat(const ScreenShotUtils::ImageFormat& _imageFormat);
@@ -68,12 +68,12 @@ protected:
 Q_SIGNALS:
     void delayChanged();
 
-    void burstshotCountChanged();
+    void burstshotChanged();
 
     void imageFormatChanged();
 
 private:
     quint8      m_delay{};
-    quint8      m_burstshotCount{};
+    quint8      m_burstshot{};
     ImageFormat m_imageFormat{ImageFormat::PNG};
 };
