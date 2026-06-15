@@ -84,7 +84,7 @@ T.ComboBox {
     popup: T.Popup {
         y: root.height + root.elementPadding
         width: root.width
-        height: Math.min(contentItem.implicitHeight + verticalPadding * 2, root.Window.height - topMargin - bottomMargin)
+        height: Math.min(contentItem.implicitHeight + verticalPadding * 2, root.height - topMargin - bottomMargin)
         transformOrigin: Item.Top
         topMargin: root.elementMargins
         bottomMargin: root.elementMargins
