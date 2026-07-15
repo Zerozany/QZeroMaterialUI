@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Material
 
 Rectangle {
     id: root
@@ -15,8 +16,8 @@ Rectangle {
     property int interval: 2000
 
     readonly property int selfWidth: ContentConf.landScape ? parent.width * 0.5 : parent.width * 0.8
-    readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
-    readonly property string textColor: ThemeManager.currentTheme["TextColor"]
+    readonly property string elementColor: Material.theme === Material.Dark ? "#FFFFFF" : "#645E5E"
+    readonly property string textColor: Material.theme === Material.Dark ? "#645E5E" : "#FFFFFF"
     readonly property int elementRadius: ElementStyle.elementRadius * 2
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property int fontSize: ThemeFont.fontSize["XL"]

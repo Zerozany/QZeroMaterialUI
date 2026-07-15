@@ -19,7 +19,7 @@ T.ComboBox {
     readonly property int elementPadding: ElementStyle.elementPadding
     readonly property int elementMargins: ElementStyle.elementMargins
     readonly property size indicatorSize: Qt.size(10, 10)
-    readonly property url indicatorSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalComboBox/cursor.png"
+    readonly property url indicatorSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/cursor.png"
     readonly property int backgroundWidth: 150
     readonly property int elevation: 4
     readonly property int duration: 50

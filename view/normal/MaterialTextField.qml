@@ -23,7 +23,7 @@ T.TextField {
     property Component option: null
     property url passwordSource: ""
 
-    readonly property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/normalTextField/clear.png"
+    readonly property url clearSource: "qrc:/qt/qml/QZeroMaterialUI/view/resource/clear.png"
     readonly property int elementMargins: ElementStyle.elementMargins * 2
     readonly property size imageSize: Qt.size(root.height * 0.5, root.height * 0.5)
     readonly property int materialTextContainerWidth: 300
