@@ -17,6 +17,7 @@ Rectangle {
     readonly property int elementRadius: ElementStyle.elementRadius * 4
     readonly property string elementColor: ThemeManager.currentTheme["ElementColor"]
     readonly property int pressAndHoldInterval: 300
+    readonly property int duration: 150
 
     property int __dynamicIslandIndex: 0
 
@@ -59,14 +60,14 @@ Rectangle {
             NumberAnimation {
                 target: root
                 property: "height"
-                duration: 150
+                duration: root.duration
                 to: root.selfHeight * 1.8
             }
 
             NumberAnimation {
                 target: root
                 property: "width"
-                duration: 150
+                duration: root.duration
                 to: root.selfWidth * 1.6
             }
         }
@@ -75,14 +76,14 @@ Rectangle {
             NumberAnimation {
                 target: root
                 property: "height"
-                duration: 150
+                duration: root.duration
                 to: root.selfHeight * 1.6
             }
 
             NumberAnimation {
                 target: root
                 property: "width"
-                duration: 150
+                duration: root.duration
                 to: root.selfWidth * 1.4
             }
         }
@@ -95,14 +96,14 @@ Rectangle {
             NumberAnimation {
                 target: root
                 property: "height"
-                duration: 150
+                duration: root.duration
                 to: root.selfHeight * 4
             }
 
             NumberAnimation {
                 target: root
                 property: "width"
-                duration: 150
+                duration: root.duration
                 to: root.selfWidth * 1.6
             }
         }
@@ -111,14 +112,14 @@ Rectangle {
             NumberAnimation {
                 target: root
                 property: "height"
-                duration: 150
+                duration: root.duration
                 to: root.selfHeight * 3.9
             }
 
             NumberAnimation {
                 target: root
                 property: "width"
-                duration: 150
+                duration: root.duration
                 to: root.selfWidth * 1.4
             }
         }
@@ -130,14 +131,14 @@ Rectangle {
         NumberAnimation {
             target: root
             property: "height"
-            duration: 150
+            duration: root.duration
             to: root.selfHeight
         }
 
         NumberAnimation {
             target: root
             property: "width"
-            duration: 150
+            duration: root.duration
             to: root.selfWidth
         }
     }
