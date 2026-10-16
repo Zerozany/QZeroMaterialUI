@@ -79,6 +79,9 @@ private:
 #elif defined(Q_OS_ANDROID)
     QDir    m_themesDir{QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath(THEMESDIRNAME)};
     QString m_themeConfigDir{QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath(THEMESCONFIGNAME)};
+#elif defined(Q_OS_UNIX)
+    QDir    m_themesDir{QDir(qApp->applicationDirPath()).filePath(THEMESDIRNAME)};
+    QString m_themeConfigDir{QDir(qApp->applicationDirPath()).filePath(THEMESCONFIGNAME)};
 #endif
     QVariantMap m_currentTheme{};
     QString     m_currentThemeName{};
