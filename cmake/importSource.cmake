@@ -1,31 +1,19 @@
-file(GLOB SRCFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/**/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/**/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/**/*.cpp"
+file(GLOB_RECURSE SRCFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
-file(GLOB RESOURCESLIST RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+file(GLOB_RECURSE RESOURCESLIST RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/view/resource/*.png"
-    "${CMAKE_CURRENT_SOURCE_DIR}/view/resource/**/*.png"
 )
 
-file(GLOB QMLFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "${CMAKE_CURRENT_SOURCE_DIR}/view/**/*.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/view/**/**/*.qml"
+file(GLOB_RECURSE QMLFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}/view/*.qml"
 )
 
 file(GLOB QMLSINGLETONS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/view/global/*.qml"
-)
-
-file(GLOB INCLUDEDIR
-    "${CMAKE_CURRENT_SOURCE_DIR}/src"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*/"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*/"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/**/*"
 )
 
 set_source_files_properties(
@@ -45,7 +33,12 @@ qt_target_qml_sources(
     RESOURCES ${RESOURCESLIST}
 )
 
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    ${INCLUDEDIR}
+file(GLOB_RECURSE INCLUDEDIR LIST_DIRECTORIES true
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*"
 )
+
+foreach(_DIR ${INCLUDEDIR})
+    if(IS_DIRECTORY ${_DIR})
+        target_include_directories(${PROJECT_NAME} PUBLIC ${_DIR})
+    endif()
+endforeach()
