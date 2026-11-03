@@ -7,9 +7,10 @@ Item {
     height: parent ? parent.height : basicSize.height
     clip: false
 
+    property string unit: "px"
+    property real ratio: 1.0
     property real pointRadius: 10
     property real lineWidth: 2
-    property string unit: "px"
 
     readonly property size basicSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
@@ -17,7 +18,7 @@ Item {
     readonly property real distance: {
         var dx = privateProperty.endX - privateProperty.startX;
         var dy = privateProperty.endY - privateProperty.startY;
-        return Math.sqrt(dx * dx + dy * dy);
+        return Math.sqrt(dx * dx + dy * dy) * ratio;
     }
 
     QtObject {
