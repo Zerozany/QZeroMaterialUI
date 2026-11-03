@@ -3,16 +3,16 @@ import QtQuick.Controls.Material
 
 Item {
     id: root
-    width: parent ? parent.width : basicSize.width
-    height: parent ? parent.height : basicSize.height
+    width: parent ? parent.width : privateProperty.basicSize.width
+    height: parent ? parent.height : privateProperty.basicSize.height
     clip: false
 
     property string unit: "px"
     property real ratio: 1.0
     property real pointRadius: 10
     property real lineWidth: 2
+    property string text: root.distance.toFixed(1) + " " + root.unit
 
-    readonly property size basicSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color pointColor: Qt.hsla((Math.random() * 137.5) % 1, 0.7, 0.55, 1)
     readonly property real distance: {
@@ -23,6 +23,7 @@ Item {
 
     QtObject {
         id: privateProperty
+        readonly property size basicSize: Qt.size(300, 300)
         property real startX: root.width * 0.25
         property real startY: root.height * 0.5
         property real endX: root.width * 0.75
@@ -41,8 +42,7 @@ Item {
     Canvas {
         id: canvas
         anchors.fill: parent
-        z: 0
-        enabled: false          // 不接收鼠标事件
+        enabled: false
         onPaint: {
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
@@ -93,29 +93,7 @@ Item {
         }
     }
 
-    Label {
-        enabled: false
-        width: implicitWidth * 1.2
-        height: implicitHeight * 1.3
-        x: Math.max(0, Math.min(root.width - width, (privateProperty.startX + privateProperty.endX) / 2 - width / 2))
-        y: Math.max(0, Math.min(root.height - height, (privateProperty.startY + privateProperty.endY) / 2 - height / 2 - 18))
-        z: 2
-        text: root.distance.toFixed(1) + " " + root.unit
-        color: Material.foreground
-        font.pixelSize: 12
-        font.bold: true
-        verticalAlignment: Qt.AlignVCenter
-        horizontalAlignment: Qt.AlignHCenter
-        background: Rectangle {
-            color: Material.background
-            border.color: root.lineColor
-            border.width: root.lineWidth * 0.5
-            radius: ElementStyle.elementRadius
-        }
-    }
-
     Rectangle {
-        z: 1
         width: root.pointRadius * 2
         height: root.pointRadius * 2
         radius: root.pointRadius
@@ -143,7 +121,6 @@ Item {
     }
 
     Rectangle {
-        z: 1
         width: root.pointRadius * 2
         height: root.pointRadius * 2
         radius: root.pointRadius
@@ -167,6 +144,27 @@ Item {
                 privateProperty.endX = Math.max(0, Math.min(root.width, r.x));
                 privateProperty.endY = Math.max(0, Math.min(root.height, r.y));
             }
+        }
+    }
+
+    Label {
+        enabled: false
+        visible: text.length > 0
+        width: implicitWidth * 1.2
+        height: implicitHeight * 1.3
+        x: Math.max(0, Math.min(root.width - width, (privateProperty.startX + privateProperty.endX) / 2 - width / 2))
+        y: Math.max(0, Math.min(root.height - height, (privateProperty.startY + privateProperty.endY) / 2 - height / 2 - 18))
+        text: root.text
+        color: Material.foreground
+        font.pixelSize: 12
+        font.bold: true
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Qt.AlignHCenter
+        background: Rectangle {
+            color: Material.background
+            border.color: root.lineColor
+            border.width: root.lineWidth * 0.5
+            radius: ElementStyle.elementRadius
         }
     }
 }
