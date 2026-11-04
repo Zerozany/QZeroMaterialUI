@@ -29,7 +29,7 @@ Item {
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
             ctx.strokeStyle = root.sideColor;
-            ctx.sideWidth = root.sideWidth;
+            ctx.lineWidth = root.sideWidth;
             ctx.lineCap = "butt";
             ctx.setLineDash([12, 4, 2, 4]);
             ctx.lineDashOffset = root.dashOffset;
@@ -40,16 +40,10 @@ Item {
 
         Connections {
             target: root
-            function onRadiusChanged() {
-                canvas.requestPaint();
-            }
             function onWidthChanged() {
                 canvas.requestPaint();
             }
             function onHeightChanged() {
-                canvas.requestPaint();
-            }
-            function onSideColorChanged() {
                 canvas.requestPaint();
             }
             function onSideWidthChanged() {
@@ -100,8 +94,8 @@ Item {
                 }
                 var p = moveHandler.centroid.position;
                 var r = moveArea.mapToItem(root, p.x, p.y);
-                root.centerPoint.x = Math.max(0, Math.min(root.width, startCenter.x + (r.x - pressCenter.x)));
-                root.centerPoint.y = Math.max(0, Math.min(root.height, startCenter.y + (r.y - pressCenter.y)));
+                root.centerPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, startCenter.x + (r.x - pressCenter.x)));
+                root.centerPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, startCenter.y + (r.y - pressCenter.y)));
             }
         }
 
@@ -122,7 +116,7 @@ Item {
                 if (!active) {
                     return;
                 }
-                root.radius = Math.max(10, Math.min(Math.min(root.width, root.height) / 2, root.backRadius * activeScale));
+                root.radius = Math.max(Math.min(10, Math.min(root.width, root.height) / 2), Math.min(Math.min(root.width, root.height) / 2, root.backRadius * activeScale));
             }
         }
 
@@ -131,16 +125,13 @@ Item {
             acceptedDevices: PointerDevice.Mouse
 
             onWheel: function (wheel) {
-                var dx = wheel.x - (root.centerPoint.x - moveArea.x);
-                var dy = wheel.y - (root.centerPoint.y - moveArea.y);
-                if (dx * dx + dy * dy > root.radius * root.radius) {
-                    return;
-                }
+                var maxRadius = Math.min(root.width, root.height) / 2;
+                var minRadius = Math.min(10, maxRadius);
                 var step = root.radius * 0.05;
                 if (wheel.angleDelta.y > 0) {
-                    root.radius = Math.min(Math.min(root.width, root.height) / 2, root.radius + step);
+                    root.radius = Math.min(maxRadius, root.radius + step);
                 } else if (wheel.angleDelta.y < 0) {
-                    root.radius = Math.max(10, root.radius - step);
+                    root.radius = Math.max(minRadius, root.radius - step);
                 }
             }
         }
@@ -150,8 +141,8 @@ Item {
         radius: root.centerRadius
         width: radius * 2
         height: radius * 2
-        x: root.centerPoint.x - radius
-        y: root.centerPoint.y - radius
+        x: root.centerPoint.x
+        y: root.centerPoint.y
         color: root.sideColor
     }
 
