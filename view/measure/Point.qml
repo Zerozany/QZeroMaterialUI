@@ -10,6 +10,10 @@ Rectangle {
     border.color: Material.background
     border.width: 2
     antialiasing: true
+    transform: Translate {
+        x: -root.width * 0.5
+        y: -root.height * 0.5
+    }
 
     readonly property alias active: dragHandler.active
     readonly property alias activeTranslation: dragHandler.activeTranslation

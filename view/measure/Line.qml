@@ -19,11 +19,7 @@ Item {
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color pointColor: Qt.hsla((Math.random() * 137.5) % 1, 0.7, 0.55, 1)
-    readonly property real distance: {
-        var dx = root.endPoint.x - root.startPoint.x;
-        var dy = root.endPoint.y - root.startPoint.y;
-        return Math.sqrt(dx * dx + dy * dy) * ratio;
-    }
+    readonly property real distance: Math.hypot(root.endPoint.x - root.startPoint.x, root.endPoint.y - root.startPoint.y) * root.ratio
 
     Canvas {
         id: canvas
@@ -60,13 +56,7 @@ Item {
             function onHeightChanged() {
                 canvas.requestPaint();
             }
-            function onLineColorChanged() {
-                canvas.requestPaint();
-            }
             function onLineWidthChanged() {
-                canvas.requestPaint();
-            }
-            function onRadiusChanged() {
                 canvas.requestPaint();
             }
         }
@@ -78,8 +68,8 @@ Item {
         width: radius * 2
         height: radius * 2
         color: root.pointColor
-        x: root.startPoint.x - radius
-        y: root.startPoint.y - radius
+        x: root.startPoint.x
+        y: root.startPoint.y
 
         onActiveTranslationChanged: {
             if (!active) {
@@ -87,8 +77,8 @@ Item {
             }
             var p = startDrag.centroid.position;
             var r = startDrag.mapToItem(root, p.x, p.y);
-            root.startPoint.x = Math.max(0, Math.min(root.width, r.x));
-            root.startPoint.y = Math.max(0, Math.min(root.height, r.y));
+            root.startPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, r.x));
+            root.startPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, r.y));
         }
     }
 
@@ -98,8 +88,8 @@ Item {
         width: radius * 2
         height: radius * 2
         color: root.pointColor
-        x: root.endPoint.x - radius
-        y: root.endPoint.y - radius
+        x: root.endPoint.x
+        y: root.endPoint.y
 
         onActiveTranslationChanged: {
             if (!active) {
@@ -107,8 +97,8 @@ Item {
             }
             var p = endDrag.centroid.position;
             var r = endDrag.mapToItem(root, p.x, p.y);
-            root.endPoint.x = Math.max(0, Math.min(root.width, r.x));
-            root.endPoint.y = Math.max(0, Math.min(root.height, r.y));
+            root.endPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, r.x));
+            root.endPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, r.y));
         }
     }
 
