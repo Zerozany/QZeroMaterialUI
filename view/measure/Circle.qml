@@ -14,6 +14,7 @@ Item {
     property real radius: Math.min(width, height) * 0.25
     property point centerPoint: Qt.point(root.width * 0.5, root.height * 0.5)
     property string text: "R " + (root.radius * root.ratio).toFixed(1) + " " + root.unit
+    property real backRadius: 0
     property real dashOffset: 0
 
     readonly property size basicSize: Qt.size(300, 300)
@@ -109,11 +110,9 @@ Item {
             minimumPointCount: 2
             maximumPointCount: 2
 
-            property real baseRadius: 0
-
             onActiveChanged: {
                 if (active) {
-                    baseRadius = root.radius;
+                    root.backRadius = root.radius;
                 }
             }
 
@@ -121,7 +120,7 @@ Item {
                 if (!active) {
                     return;
                 }
-                root.radius = Math.max(10, Math.min(Math.min(root.width, root.height) / 2, baseRadius * activeScale));
+                root.radius = Math.max(10, Math.min(Math.min(root.width, root.height) / 2, root.backRadius * activeScale));
             }
         }
 
