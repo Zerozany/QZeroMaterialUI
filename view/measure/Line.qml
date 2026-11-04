@@ -3,8 +3,8 @@ import QtQuick.Controls.Material
 
 Item {
     id: root
-    width: parent ? parent.width : basicSize.width
-    height: parent ? parent.height : basicSize.height
+    width: parent ? parent.width : defaultSize.width
+    height: parent ? parent.height : defaultSize.height
     clip: false
 
     property string unit: "px"
@@ -16,7 +16,7 @@ Item {
     property point endPoint: Qt.point(root.width * 0.75, root.height * 0.5)
     property real dashOffset: 0
 
-    readonly property size basicSize: Qt.size(300, 300)
+    readonly property size defaultSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color pointColor: Qt.hsla((Math.random() * 137.5) % 1, 0.7, 0.55, 1)
     readonly property real distance: {

@@ -3,8 +3,8 @@ import QtQuick.Controls.Material
 
 Item {
     id: root
-    width: parent ? parent.width : root.basicSize.width
-    height: parent ? parent.height : root.basicSize.height
+    width: parent ? parent.width : root.defaultSize.width
+    height: parent ? parent.height : root.defaultSize.height
     clip: false
 
     property string unit: "px"
@@ -17,7 +17,7 @@ Item {
     property real backRadius: 0
     property real dashOffset: 0
 
-    readonly property size basicSize: Qt.size(300, 300)
+    readonly property size defaultSize: Qt.size(300, 300)
     readonly property color sideColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color color: "transparent"
 
@@ -83,14 +83,15 @@ Item {
             property point pressCenter: Qt.point(0, 0)
 
             onActiveChanged: {
-                if (active) {
-                    startCenter.x = root.centerPoint.x;
-                    startCenter.y = root.centerPoint.y;
-                    var p = moveHandler.centroid.position;
-                    var r = moveArea.mapToItem(root, p.x, p.y);
-                    pressCenter.x = r.x;
-                    pressCenter.y = r.y;
+                if (!active) {
+                    return;
                 }
+                startCenter.x = root.centerPoint.x;
+                startCenter.y = root.centerPoint.y;
+                var p = moveHandler.centroid.position;
+                var r = moveArea.mapToItem(root, p.x, p.y);
+                pressCenter.x = r.x;
+                pressCenter.y = r.y;
             }
 
             onActiveTranslationChanged: {
@@ -111,9 +112,10 @@ Item {
             maximumPointCount: 2
 
             onActiveChanged: {
-                if (active) {
-                    root.backRadius = root.radius;
+                if (!active) {
+                    return;
                 }
+                root.backRadius = root.radius;
             }
 
             onActiveScaleChanged: {
