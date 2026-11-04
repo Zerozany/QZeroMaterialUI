@@ -59,7 +59,6 @@ Item {
     }
 
     Rectangle {
-        id: moveArea
         radius: root.radius
         x: root.centerPoint.x - radius
         y: root.centerPoint.y - radius
@@ -83,7 +82,7 @@ Item {
                 startCenter.x = root.centerPoint.x;
                 startCenter.y = root.centerPoint.y;
                 var p = moveHandler.centroid.position;
-                var r = moveArea.mapToItem(root, p.x, p.y);
+                var r = parent.mapToItem(root, p.x, p.y);
                 pressCenter.x = r.x;
                 pressCenter.y = r.y;
             }
@@ -93,7 +92,7 @@ Item {
                     return;
                 }
                 var p = moveHandler.centroid.position;
-                var r = moveArea.mapToItem(root, p.x, p.y);
+                var r = parent.mapToItem(root, p.x, p.y);
                 root.centerPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, startCenter.x + (r.x - pressCenter.x)));
                 root.centerPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, startCenter.y + (r.y - pressCenter.y)));
             }
