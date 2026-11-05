@@ -9,17 +9,17 @@ Item {
 
     property string unit: "px"
     property real ratio: 1.0
-    property real radius: 10
-    property real lineWidth: 2
-    property string text: root.distance.toFixed(1) + " " + root.unit
-    property point startPoint: Qt.point(root.width * 0.25, root.height * 0.5)
-    property point endPoint: Qt.point(root.width * 0.75, root.height * 0.5)
-    property real dashOffset: 0
+    property string text: distance.toFixed(1) + " " + unit
+    property alias startPoint: startPoint
+    property alias endPoint: endPoint
 
+    property real dashOffset: 0
+    readonly property real radius: 10
+    readonly property real lineWidth: 2
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color pointColor: Qt.hsla((Math.random() * 137.5) % 1, 0.7, 0.55, 1)
-    readonly property real distance: Math.hypot(root.endPoint.x - root.startPoint.x, root.endPoint.y - root.startPoint.y) * root.ratio
+    readonly property real distance: Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y) * root.ratio
 
     Canvas {
         id: canvas
@@ -34,8 +34,8 @@ Item {
             ctx.setLineDash([12, 4, 2, 4]);
             ctx.lineDashOffset = root.dashOffset;
             ctx.beginPath();
-            ctx.moveTo(root.startPoint.x, root.startPoint.y);
-            ctx.lineTo(root.endPoint.x, root.endPoint.y);
+            ctx.moveTo(startPoint.x, startPoint.y);
+            ctx.lineTo(endPoint.x, endPoint.y);
             ctx.stroke();
         }
 
@@ -56,49 +56,46 @@ Item {
             function onHeightChanged() {
                 canvas.requestPaint();
             }
-            function onLineWidthChanged() {
-                canvas.requestPaint();
-            }
         }
     }
 
     Point {
-        id: startDrag
+        id: startPoint
         radius: root.radius
         width: radius * 2
         height: radius * 2
         color: root.pointColor
-        x: root.startPoint.x
-        y: root.startPoint.y
+        x: root.width * 0.25
+        y: root.height * 0.5
 
         onActiveTranslationChanged: {
             if (!active) {
                 return;
             }
-            var p = startDrag.centroid.position;
-            var r = startDrag.mapToItem(root, p.x, p.y);
-            root.startPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, r.x));
-            root.startPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, r.y));
+            var p = startPoint.centroid.position;
+            var r = startPoint.mapToItem(root, p.x, p.y);
+            x = Math.max(root.radius, Math.min(root.width - root.radius, r.x));
+            y = Math.max(root.radius, Math.min(root.height - root.radius, r.y));
         }
     }
 
     Point {
-        id: endDrag
+        id: endPoint
         radius: root.radius
         width: radius * 2
         height: radius * 2
         color: root.pointColor
-        x: root.endPoint.x
-        y: root.endPoint.y
+        x: root.width * 0.75
+        y: root.height * 0.5
 
         onActiveTranslationChanged: {
             if (!active) {
                 return;
             }
-            var p = endDrag.centroid.position;
-            var r = endDrag.mapToItem(root, p.x, p.y);
-            root.endPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, r.x));
-            root.endPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, r.y));
+            var p = endPoint.centroid.position;
+            var r = endPoint.mapToItem(root, p.x, p.y);
+            x = Math.max(root.radius, Math.min(root.width - root.radius, r.x));
+            y = Math.max(root.radius, Math.min(root.height - root.radius, r.y));
         }
     }
 
@@ -107,8 +104,8 @@ Item {
         visible: text.length > 0
         width: implicitWidth * 1.2
         height: implicitHeight * 1.3
-        x: Math.max(0, Math.min(root.width - width, (root.startPoint.x + root.endPoint.x) / 2 - width / 2))
-        y: Math.max(0, Math.min(root.height - height, (root.startPoint.y + root.endPoint.y) / 2 - height / 2 - 18))
+        x: Math.max(0, Math.min(root.width - width, (startPoint.x + endPoint.x) / 2 - width / 2))
+        y: Math.max(0, Math.min(root.height - height, (startPoint.y + endPoint.y) / 2 - height / 2 - 18))
         text: root.text
         color: Material.foreground
         font.pixelSize: 12
@@ -128,6 +125,6 @@ Item {
         to: -22
         duration: 600
         loops: Animation.Infinite
-        running: startDrag.active || endDrag.active
+        running: startPoint.active || endPoint.active
     }
 }

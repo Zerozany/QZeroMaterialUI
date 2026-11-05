@@ -12,9 +12,9 @@ Item {
     property string unit: "px"
     property real ratio: 1.0
     property real sideWidth: 2
-    property point centerPoint: Qt.point(width * 0.5, height * 0.5)
     property real pointRadius: 10
     property string text: "Rx " + unit
+    property point centerPoint: Qt.point((leftPoint.x + rightPoint.x) * 0.5, (topPoint.y + bottomPoint.y) * 0.5)
     property point topPoint: Qt.point(root.width * 0.50, root.height * 0.25)
     property point bottomPoint: Qt.point(root.width * 0.50, root.height * 0.75)
     property point leftPoint: Qt.point(root.width * 0.25, root.height * 0.50)
@@ -114,29 +114,59 @@ Item {
         }
     }
 
-    Item {
-        id: moveArea
-        anchors.fill: parent
-
-        DragHandler {
-            id: moveHandler
-            target: null
-            cursorShape: Qt.PointingHandCursor
-            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
-
-            onActiveChanged: {
-                if (!active) {
-                    return;
-                }
-            }
-
-            onActiveTranslationChanged: {
-                if (!active) {
-                    return;
-                }
-            }
-        }
+    Point {
+        id: centerPoint
+        radius: root.pointRadius
+        width: radius * 2
+        height: radius * 2
+        color: root.sideColor
+        x: root.centerPoint.x
+        y: root.centerPoint.y
     }
+
+    // Item {
+    //     anchors.fill: parent
+
+    //     DragHandler {
+    //         id: moveHandler
+    //         target: null
+    //         cursorShape: Qt.PointingHandCursor
+    //         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
+
+    //         property point lastTranslation: Qt.point(0, 0)
+
+    //         onActiveChanged: {
+    //             if (!active) {
+    //                 return;
+    //             }
+
+    //             lastTranslation = activeTranslation;
+    //         }
+
+    //         onActiveTranslationChanged: {
+    //             if (!active) {
+    //                 return;
+    //             }
+
+    //             // 必须以初始按下位置判断，而不是当前位置
+    //             const startPos = centroid.pressPosition;
+
+    //             if (Math.hypot(startPos.x - root.centerPoint.x, startPos.y - root.centerPoint.y) > root.moveHotRadius) {
+    //                 return;
+    //             }
+
+    //             const dx = activeTranslation.x - lastTranslation.x;
+    //             const dy = activeTranslation.y - lastTranslation.y;
+
+    //             lastTranslation = activeTranslation;
+
+    //             root.topPoint = Qt.point(root.topPoint.x + dx, root.topPoint.y + dy);
+    //             root.bottomPoint = Qt.point(root.bottomPoint.x + dx, root.bottomPoint.y + dy);
+    //             root.leftPoint = Qt.point(root.leftPoint.x + dx, root.leftPoint.y + dy);
+    //             root.rightPoint = Qt.point(root.rightPoint.x + dx, root.rightPoint.y + dy);
+    //         }
+    //     }
+    // }
 
     NumberAnimation on dashOffset {
         from: 0

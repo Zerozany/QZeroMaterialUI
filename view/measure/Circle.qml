@@ -3,20 +3,20 @@ import QtQuick.Controls.Material
 
 Item {
     id: root
-    width: parent ? parent.width : root.defaultSize.width
-    height: parent ? parent.height : root.defaultSize.height
+    width: parent ? parent.width : defaultSize.width
+    height: parent ? parent.height : defaultSize.height
     clip: false
 
     property string unit: "px"
     property real ratio: 1.0
-    property real centerRadius: 10
-    property real sideWidth: 2
     property real radius: Math.min(width, height) * 0.25
-    property point centerPoint: Qt.point(root.width * 0.5, root.height * 0.5)
-    property string text: "R " + (root.radius * root.ratio).toFixed(1) + " " + root.unit
-    property real backRadius: 0
-    property real dashOffset: 0
+    property string text: "R " + (radius * ratio).toFixed(1) + " " + unit
+    property alias centerPoint: centerPoint
 
+    property real lastTranslation: 0
+    property real dashOffset: 0
+    readonly property real pointRadius: 10
+    readonly property real sideWidth: 2
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color sideColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color color: "transparent"
@@ -34,7 +34,7 @@ Item {
             ctx.setLineDash([12, 4, 2, 4]);
             ctx.lineDashOffset = root.dashOffset;
             ctx.beginPath();
-            ctx.arc(root.centerPoint.x, root.centerPoint.y, Math.max(0, root.radius), 0, Math.PI * 2, false);
+            ctx.arc(centerPoint.x, centerPoint.y, Math.max(0, root.radius), 0, Math.PI * 2, false);
             ctx.stroke();
         }
 
@@ -44,9 +44,6 @@ Item {
                 canvas.requestPaint();
             }
             function onHeightChanged() {
-                canvas.requestPaint();
-            }
-            function onSideWidthChanged() {
                 canvas.requestPaint();
             }
             function onDashOffsetChanged() {
@@ -60,8 +57,8 @@ Item {
 
     Rectangle {
         radius: root.radius
-        x: root.centerPoint.x - radius
-        y: root.centerPoint.y - radius
+        x: centerPoint.x - radius
+        y: centerPoint.y - radius
         width: radius * 2
         height: radius * 2
         color: root.color
@@ -79,8 +76,8 @@ Item {
                 if (!active) {
                     return;
                 }
-                startCenter.x = root.centerPoint.x;
-                startCenter.y = root.centerPoint.y;
+                startCenter.x = centerPoint.x;
+                startCenter.y = centerPoint.y;
                 var p = moveHandler.centroid.position;
                 var r = parent.mapToItem(root, p.x, p.y);
                 pressCenter.x = r.x;
@@ -93,8 +90,8 @@ Item {
                 }
                 var p = moveHandler.centroid.position;
                 var r = parent.mapToItem(root, p.x, p.y);
-                root.centerPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, startCenter.x + (r.x - pressCenter.x)));
-                root.centerPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, startCenter.y + (r.y - pressCenter.y)));
+                centerPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, startCenter.x + (r.x - pressCenter.x)));
+                centerPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, startCenter.y + (r.y - pressCenter.y)));
             }
         }
 
@@ -108,14 +105,14 @@ Item {
                 if (!active) {
                     return;
                 }
-                root.backRadius = root.radius;
+                root.lastTranslation = root.radius;
             }
 
             onActiveScaleChanged: {
                 if (!active) {
                     return;
                 }
-                root.radius = Math.max(Math.min(10, Math.min(root.width, root.height) / 2), Math.min(Math.min(root.width, root.height) / 2, root.backRadius * activeScale));
+                root.radius = Math.max(Math.min(10, Math.min(root.width, root.height) / 2), Math.min(Math.min(root.width, root.height) / 2, root.lastTranslation * activeScale));
             }
         }
 
@@ -137,11 +134,12 @@ Item {
     }
 
     Point {
-        radius: root.centerRadius
+        id: centerPoint
+        radius: root.pointRadius
         width: radius * 2
         height: radius * 2
-        x: root.centerPoint.x
-        y: root.centerPoint.y
+        x: root.width * 0.5
+        y: root.height * 0.5
         color: root.sideColor
     }
 
@@ -150,8 +148,8 @@ Item {
         visible: text.length > 0
         width: implicitWidth * 1.2
         height: implicitHeight * 1.3
-        x: Math.max(0, Math.min(root.width - width, root.centerPoint.x - width / 2))
-        y: Math.max(0, Math.min(root.height - height, root.centerPoint.y - root.radius - height - 4))
+        x: Math.max(0, Math.min(root.width - width, centerPoint.x - width / 2))
+        y: Math.max(0, Math.min(root.height - height, centerPoint.y - root.radius - height - 4))
         text: root.text
         color: Material.foreground
         font.pixelSize: 12
