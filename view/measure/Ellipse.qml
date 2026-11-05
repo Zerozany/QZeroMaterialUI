@@ -9,50 +9,37 @@ Item {
     height: parent ? parent.height : defaultSize.height
     clip: false
 
-    property string unit: "px"
     property real ratio: 1.0
-
-    property real radiusX: Math.min(width, height) * 0.3
-    property real radiusY: Math.min(width, height) * 0.2
-    property real rotationAngle: 0
+    property real angle: 0
+    property real horizontalRadius: Math.min(width, height) * 0.3
+    property real verticalRadius: Math.min(width, height) * 0.2
+    property string unit: "px"
+    property string text: "RX " + (horizontalRadius * ratio).toFixed(1) + " / RY " + (verticalRadius * ratio).toFixed(1) + " " + unit
+    property alias centerPoint: centerPoint
 
     property bool vertexDragActive: false
-
-    property string text: "RX " + (radiusX * ratio).toFixed(1) + " / RY " + (radiusY * ratio).toFixed(1) + " " + unit
-
     readonly property real pointRadius: 10
     readonly property real sideWidth: 2
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color sideColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
-
-    // 径向/切向死区（像素），小于该值视为手抖，不响应
-    readonly property real rotateDeadZone: 0.5
-    readonly property real radiusDeadZone: 0.5
-
     readonly property color color: "transparent"
     readonly property int pointSize: 12
 
-    // 轴对齐椭圆上的四个端点（未旋转），顺序：右、上、左、下
-    function axisAlignedVertices() {
-        return [Qt.point(centerPoint.x + radiusX, centerPoint.y), Qt.point(centerPoint.x, centerPoint.y - radiusY), Qt.point(centerPoint.x - radiusX, centerPoint.y), Qt.point(centerPoint.x, centerPoint.y + radiusY)];
-    }
-
-    // 对点应用绕中心的旋转
-    function rotatePoint(pt) {
-        var rad = rotationAngle * Math.PI / 180;
+    // 返回四个顶点旋转后的根坐标，顺序：右、上、左、下
+    function vertexPositions() {
+        var rad = angle * Math.PI / 180;
         var cos = Math.cos(rad);
         var sin = Math.sin(rad);
-        var dx = pt.x - centerPoint.x;
-        var dy = pt.y - centerPoint.y;
-        return Qt.point(centerPoint.x + dx * cos - dy * sin, centerPoint.y + dx * sin + dy * cos);
-    }
-
-    // 四个顶点当前根坐标
-    function vertexPositions() {
-        var base = axisAlignedVertices();
+        var cx = centerPoint.x;
+        var cy = centerPoint.y;
+        // 未旋转时的四个端点偏移
+        var offsets = [Qt.point(horizontalRadius, 0), Qt.point(0, -verticalRadius), Qt.point(-horizontalRadius, 0), Qt.point(0, verticalRadius)];
         var result = [];
-        for (var i = 0; i < base.length; i++)
-            result.push(rotatePoint(base[i]));
+        for (var i = 0; i < 4; i++) {
+            var dx = offsets[i].x;
+            var dy = offsets[i].y;
+            result.push(Qt.point(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos));
+        }
         return result;
     }
 
@@ -61,7 +48,7 @@ Item {
         transform: Rotation {
             origin.x: centerPoint.x
             origin.y: centerPoint.y
-            angle: root.rotationAngle
+            angle: root.angle
         }
 
         ShapePath {
@@ -71,15 +58,15 @@ Item {
             strokeStyle: ShapePath.DashLine
             dashPattern: [12, 4, 2, 4]
             dashOffset: 0
-            startX: centerPoint.x + root.radiusX
+            startX: centerPoint.x + root.horizontalRadius
             startY: centerPoint.y
 
             PathAngleArc {
                 centerX: centerPoint.x
                 centerY: centerPoint.y
-                radiusX: root.radiusX
-                radiusY: root.radiusY
-                startAngle: root.rotationAngle
+                radiusX: root.horizontalRadius
+                radiusY: root.verticalRadius
+                startAngle: 0
                 sweepAngle: 360
             }
 
@@ -91,10 +78,6 @@ Item {
                 running: centerPoint.active || root.vertexDragActive
             }
         }
-    }
-
-    Shape {
-        anchors.fill: parent
 
         ShapePath {
             strokeColor: Qt.rgba(root.sideColor.r, root.sideColor.g, root.sideColor.b, 0.35)
@@ -102,36 +85,36 @@ Item {
             fillColor: root.color
             strokeStyle: ShapePath.DashLine
             dashPattern: [4, 4]
-            startX: centerPoint.x
+            startX: centerPoint.x + root.horizontalRadius
             startY: centerPoint.y
 
             PathLine {
-                x: root.vertexPositions()[0].x
-                y: root.vertexPositions()[0].y
-            }
-            PathMove {
                 x: centerPoint.x
                 y: centerPoint.y
             }
-            PathLine {
-                x: root.vertexPositions()[1].x
-                y: root.vertexPositions()[1].y
-            }
             PathMove {
+                x: centerPoint.x
+                y: centerPoint.y - root.verticalRadius
+            }
+            PathLine {
                 x: centerPoint.x
                 y: centerPoint.y
             }
-            PathLine {
-                x: root.vertexPositions()[2].x
-                y: root.vertexPositions()[2].y
-            }
             PathMove {
-                x: centerPoint.x
+                x: centerPoint.x - root.horizontalRadius
                 y: centerPoint.y
             }
             PathLine {
-                x: root.vertexPositions()[3].x
-                y: root.vertexPositions()[3].y
+                x: centerPoint.x
+                y: centerPoint.y
+            }
+            PathMove {
+                x: centerPoint.x
+                y: centerPoint.y + root.verticalRadius
+            }
+            PathLine {
+                x: centerPoint.x
+                y: centerPoint.y
             }
         }
     }
@@ -167,13 +150,13 @@ Item {
             Connections {
                 target: root
 
-                function onRadiusXChanged() {
+                function onHorizontalRadiusChanged() {
                     vertexHandle.updatePosition();
                 }
-                function onRadiusYChanged() {
+                function onVerticalRadiusChanged() {
                     vertexHandle.updatePosition();
                 }
-                function onRotationAngleChanged() {
+                function onAngleChanged() {
                     vertexHandle.updatePosition();
                 }
                 function onWidthChanged() {
@@ -219,7 +202,7 @@ Item {
 
                 // 用“当前旋转角”把本帧增量转到当前局部坐标
                 // 这样切向始终是此刻椭圆在该顶点的真实切向
-                var rad = -root.rotationAngle * Math.PI / 180;
+                var rad = -root.angle * Math.PI / 180;
                 var cos = Math.cos(rad);
                 var sin = Math.sin(rad);
                 var localDx = dx * cos - dy * sin;
@@ -252,26 +235,26 @@ Item {
                 var maxR = Math.min(root.width, root.height) / 2;
 
                 // 1) 半径：只由径向增量决定，带径向死区，增量累加
-                var newRadiusX = root.radiusX;
-                var newRadiusY = root.radiusY;
+                var newRadiusX = root.horizontalRadius;
+                var newRadiusY = root.verticalRadius;
 
-                if (Math.abs(radialDelta) > root.radiusDeadZone) {
+                if (Math.abs(radialDelta) > 0.5) {
                     if (idx === 0 || idx === 2)
-                        newRadiusX = root.radiusX + radialDelta;
+                        newRadiusX = root.horizontalRadius + radialDelta;
                     else
-                        newRadiusY = root.radiusY + radialDelta;
+                        newRadiusY = root.verticalRadius + radialDelta;
                 }
 
                 newRadiusX = Math.min(Math.max(10, newRadiusX), maxR);
                 newRadiusY = Math.min(Math.max(10, newRadiusY), maxR);
 
                 // 2) 旋转：只由切向增量决定，带切向死区，参考当前半径，增量累加
-                var newRotation = root.rotationAngle;
+                var newRotation = root.angle;
 
-                if (Math.abs(tangentialDelta) > root.rotateDeadZone) {
-                    var refRadius = (idx === 0 || idx === 2) ? Math.max(1, root.radiusX) : Math.max(1, root.radiusY);
+                if (Math.abs(tangentialDelta) > 0.5) {
+                    var refRadius = (idx === 0 || idx === 2) ? Math.max(1, root.horizontalRadius) : Math.max(1, root.verticalRadius);
                     var angleDelta = (tangentialDelta / refRadius) * (180 / Math.PI);
-                    newRotation = root.rotationAngle + angleDelta;
+                    newRotation = root.angle + angleDelta;
                     if (newRotation >= 180)
                         newRotation -= 360;
                     else if (newRotation < -180)
@@ -279,9 +262,9 @@ Item {
                 }
 
                 // 3) 一次性提交
-                root.radiusX = newRadiusX;
-                root.radiusY = newRadiusY;
-                root.rotationAngle = newRotation;
+                root.horizontalRadius = newRadiusX;
+                root.verticalRadius = newRadiusY;
+                root.angle = newRotation;
             }
         }
     }
@@ -294,18 +277,17 @@ Item {
         color: root.sideColor
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
 
-        property real startCenterX
-        property real startCenterY
-        property point pressRoot
+        property point rootPoint: Qt.point(0, 0)
+        property point startPoint: Qt.point(0, 0)
 
         onActiveChanged: {
             if (!active) {
                 return;
             }
-            startCenterX = centerPoint.x;
-            startCenterY = centerPoint.y;
+            startPoint.x = centerPoint.x;
+            startPoint.y = centerPoint.y;
             var p = centerPoint.centroid.position;
-            pressRoot = mapToItem(root, p.x, p.y);
+            rootPoint = mapToItem(root, p.x, p.y);
         }
 
         onActiveTranslationChanged: {
@@ -313,34 +295,20 @@ Item {
                 return;
             }
             var p = centerPoint.centroid.position;
-            var curRoot = mapToItem(root, p.x, p.y);
-            var dx = curRoot.x - pressRoot.x;
-            var dy = curRoot.y - pressRoot.y;
-
-            // 计算旋转后椭圆外接盒的半宽/半高
-            var rad = root.rotationAngle * Math.PI / 180;
-            var cos = Math.cos(rad);
-            var sin = Math.sin(rad);
-            var halfW = Math.sqrt(Math.pow(root.radiusX * cos, 2) + Math.pow(root.radiusY * sin, 2));
-            var halfH = Math.sqrt(Math.pow(root.radiusX * sin, 2) + Math.pow(root.radiusY * cos, 2));
-
-            var minX = halfW;
-            var maxX = root.width - halfW;
-            var minY = halfH;
-            var maxY = root.height - halfH;
-
-            // 防止半径过大导致区间反转
-            if (minX > maxX) {
-                minX = root.width / 2;
-                maxX = root.width / 2;
-            }
-            if (minY > maxY) {
-                minY = root.height / 2;
-                maxY = root.height / 2;
-            }
-
-            centerPoint.x = Math.max(minX, Math.min(maxX, startCenterX + dx));
-            centerPoint.y = Math.max(minY, Math.min(maxY, startCenterY + dy));
+            // 旋转后椭圆外接盒的半宽/半高
+            var cos = Math.cos(root.angle * Math.PI / 180);
+            var sin = Math.sin(root.angle * Math.PI / 180);
+            var halfW = Math.sqrt(Math.pow(root.horizontalRadius * cos, 2) + Math.pow(root.verticalRadius * sin, 2));
+            var halfH = Math.sqrt(Math.pow(root.horizontalRadius * sin, 2) + Math.pow(root.verticalRadius * cos, 2));
+            // 合法区间（半径过大时退化为中心）
+            var minX = Math.min(halfW, root.width - halfW);
+            var maxX = Math.max(halfW, root.width - halfW);
+            var minY = Math.min(halfH, root.height - halfH);
+            var maxY = Math.max(halfH, root.height - halfH);
+            // 指针位移直接内联到目标位置计算中
+            var cur = mapToItem(root, p.x, p.y);
+            centerPoint.x = Math.max(minX, Math.min(maxX, startPoint.x + cur.x - rootPoint.x));
+            centerPoint.y = Math.max(minY, Math.min(maxY, startPoint.y + cur.y - rootPoint.y));
         }
     }
 
@@ -350,7 +318,7 @@ Item {
         width: implicitWidth * 1.2
         height: implicitHeight * 1.3
         x: Math.max(0, Math.min(root.width - width, centerPoint.x - width / 2))
-        y: Math.max(0, Math.min(root.height - height, centerPoint.y - root.radiusY - height - 4))
+        y: Math.max(0, Math.min(root.height - height, centerPoint.y - root.verticalRadius - height - 4))
         text: root.text
         color: Material.foreground
         font.pixelSize: root.pointSize
