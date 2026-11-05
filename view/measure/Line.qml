@@ -53,8 +53,6 @@ Item {
     Point {
         id: startPoint
         radius: root.radius
-        width: radius * 2
-        height: radius * 2
         color: root.pointColor
         x: root.width * 0.25
         y: root.height * 0.5
@@ -73,8 +71,6 @@ Item {
     Point {
         id: endPoint
         radius: root.radius
-        width: radius * 2
-        height: radius * 2
         color: root.pointColor
         x: root.width * 0.75
         y: root.height * 0.5

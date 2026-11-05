@@ -65,8 +65,9 @@ Item {
             property point pressCenter: Qt.point(0, 0)
 
             onActiveChanged: {
-                if (!active)
+                if (!active) {
                     return;
+                }
                 startCenter.x = centerPoint.x;
                 startCenter.y = centerPoint.y;
                 var p = moveHandler.centroid.position;
@@ -125,8 +126,6 @@ Item {
     Point {
         id: centerPoint
         radius: root.pointRadius
-        width: radius * 2
-        height: radius * 2
         x: root.width * 0.5
         y: root.height * 0.5
         color: root.sideColor

@@ -12,14 +12,10 @@ Item {
     property string unit: "px"
     property real ratio: 1.0
 
-    property real centerX: width * 0.5
-    property real centerY: height * 0.5
-
     property real radiusX: Math.min(width, height) * 0.3
     property real radiusY: Math.min(width, height) * 0.2
     property real rotationAngle: 0
 
-    property real dashOffset: 0
     property bool vertexDragActive: false
 
     property string text: "RX " + (radiusX * ratio).toFixed(1) + " / RY " + (radiusY * ratio).toFixed(1) + " " + unit
@@ -29,12 +25,16 @@ Item {
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color sideColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
 
-    // 切向旋转死区（像素），小于该值不旋转，避免手抖
-    readonly property real rotateDeadZone: 6
+    // 径向/切向死区（像素），小于该值视为手抖，不响应
+    readonly property real rotateDeadZone: 0.5
+    readonly property real radiusDeadZone: 0.5
+
+    readonly property color color: "transparent"
+    readonly property int pointSize: 12
 
     // 轴对齐椭圆上的四个端点（未旋转），顺序：右、上、左、下
     function axisAlignedVertices() {
-        return [Qt.point(centerX + radiusX, centerY), Qt.point(centerX, centerY - radiusY), Qt.point(centerX - radiusX, centerY), Qt.point(centerX, centerY + radiusY)];
+        return [Qt.point(centerPoint.x + radiusX, centerPoint.y), Qt.point(centerPoint.x, centerPoint.y - radiusY), Qt.point(centerPoint.x - radiusX, centerPoint.y), Qt.point(centerPoint.x, centerPoint.y + radiusY)];
     }
 
     // 对点应用绕中心的旋转
@@ -42,9 +42,9 @@ Item {
         var rad = rotationAngle * Math.PI / 180;
         var cos = Math.cos(rad);
         var sin = Math.sin(rad);
-        var dx = pt.x - centerX;
-        var dy = pt.y - centerY;
-        return Qt.point(centerX + dx * cos - dy * sin, centerY + dx * sin + dy * cos);
+        var dx = pt.x - centerPoint.x;
+        var dy = pt.y - centerPoint.y;
+        return Qt.point(centerPoint.x + dx * cos - dy * sin, centerPoint.y + dx * sin + dy * cos);
     }
 
     // 四个顶点当前根坐标
@@ -56,69 +56,78 @@ Item {
         return result;
     }
 
-    // 椭圆（虚线 + 流动动画），用 Rotation 变换真正旋转整个椭圆
     Shape {
         anchors.fill: parent
         transform: Rotation {
-            origin.x: root.centerX
-            origin.y: root.centerY
+            origin.x: centerPoint.x
+            origin.y: centerPoint.y
             angle: root.rotationAngle
         }
+
         ShapePath {
             strokeColor: root.sideColor
             strokeWidth: root.sideWidth
-            fillColor: "transparent"
+            fillColor: root.color
             strokeStyle: ShapePath.DashLine
             dashPattern: [12, 4, 2, 4]
-            dashOffset: root.dashOffset
-            startX: root.centerX + root.radiusX
-            startY: root.centerY
+            dashOffset: 0
+            startX: centerPoint.x + root.radiusX
+            startY: centerPoint.y
 
             PathAngleArc {
-                centerX: root.centerX
-                centerY: root.centerY
+                centerX: centerPoint.x
+                centerY: centerPoint.y
                 radiusX: root.radiusX
                 radiusY: root.radiusY
-                startAngle: 0
+                startAngle: root.rotationAngle
                 sweepAngle: 360
+            }
+
+            NumberAnimation on dashOffset {
+                from: 0
+                to: -22
+                duration: 600
+                loops: Animation.Infinite
+                running: centerPoint.active || root.vertexDragActive
             }
         }
     }
 
-    // 辅助连线（中心到四顶点）
     Shape {
         anchors.fill: parent
+
         ShapePath {
             strokeColor: Qt.rgba(root.sideColor.r, root.sideColor.g, root.sideColor.b, 0.35)
-            strokeWidth: 1
-            fillColor: "transparent"
+            strokeWidth: root.sideWidth * 0.5
+            fillColor: root.color
             strokeStyle: ShapePath.DashLine
             dashPattern: [4, 4]
-            startX: root.centerX
-            startY: root.centerY
+            startX: centerPoint.x
+            startY: centerPoint.y
+
             PathLine {
                 x: root.vertexPositions()[0].x
                 y: root.vertexPositions()[0].y
             }
             PathMove {
-                x: root.centerX
-                y: root.centerY
+                x: centerPoint.x
+                y: centerPoint.y
             }
             PathLine {
                 x: root.vertexPositions()[1].x
                 y: root.vertexPositions()[1].y
             }
             PathMove {
-                x: root.centerX
-                y: root.centerY
+                x: centerPoint.x
+                y: centerPoint.y
             }
             PathLine {
                 x: root.vertexPositions()[2].x
                 y: root.vertexPositions()[2].y
             }
             PathMove {
-                x: root.centerX
-                y: root.centerY
+                x: centerPoint.x
+                y: centerPoint.y
             }
             PathLine {
                 x: root.vertexPositions()[3].x
@@ -127,38 +136,37 @@ Item {
         }
     }
 
-    // 四个顶点手柄
     Repeater {
-        id: vertexRepeater
         model: 4
-        delegate: Rectangle {
+        delegate: Point {
             id: vertexHandle
-            width: root.pointRadius * 2
-            height: root.pointRadius * 2
             radius: root.pointRadius
             color: root.sideColor
-            border.color: Material.background
-            border.width: 1
 
             required property int index
 
             function updatePosition() {
                 var verts = root.vertexPositions();
                 var p = verts[index];
-                x = p.x - width / 2;
-                y = p.y - height / 2;
+                x = p.x;
+                y = p.y;
             }
 
             Component.onCompleted: updatePosition()
 
             Connections {
+                target: centerPoint
+                function onXChanged() {
+                    vertexHandle.updatePosition();
+                }
+                function onYChanged() {
+                    vertexHandle.updatePosition();
+                }
+            }
+
+            Connections {
                 target: root
-                function onCenterXChanged() {
-                    vertexHandle.updatePosition();
-                }
-                function onCenterYChanged() {
-                    vertexHandle.updatePosition();
-                }
+
                 function onRadiusXChanged() {
                     vertexHandle.updatePosition();
                 }
@@ -176,166 +184,163 @@ Item {
                 }
             }
 
-            DragHandler {
-                id: vertexDrag
-                target: null
-                cursorShape: Qt.SizeAllCursor
-                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
+            property real lastRootX
+            property real lastRootY
+            property bool hasLast
 
-                property real startRadiusX
-                property real startRadiusY
-                property real startRotation
-                property point pressRoot
+            onActiveChanged: {
+                root.vertexDragActive = active;
+                if (!active) {
+                    hasLast = false;
+                    return;
+                }
+                var p = centroid.position;
+                var curRoot = vertexHandle.mapToItem(root, p.x, p.y);
+                lastRootX = curRoot.x;
+                lastRootY = curRoot.y;
+                hasLast = true;
+            }
 
-                onActiveChanged: {
-                    root.vertexDragActive = active;
-                    if (!active)
-                        return;
-                    startRadiusX = root.radiusX;
-                    startRadiusY = root.radiusY;
-                    startRotation = root.rotationAngle;
-                    var p = vertexDrag.centroid.position;
-                    pressRoot = vertexHandle.mapToItem(root, p.x, p.y);
+            onActiveTranslationChanged: {
+                if (!active || !hasLast)
+                    return;
+
+                var p = centroid.position;
+                var curRoot = vertexHandle.mapToItem(root, p.x, p.y);
+
+                // 本帧增量（根坐标）
+                var dx = curRoot.x - lastRootX;
+                var dy = curRoot.y - lastRootY;
+                lastRootX = curRoot.x;
+                lastRootY = curRoot.y;
+
+                if (dx === 0 && dy === 0)
+                    return;
+
+                // 用“当前旋转角”把本帧增量转到当前局部坐标
+                // 这样切向始终是此刻椭圆在该顶点的真实切向
+                var rad = -root.rotationAngle * Math.PI / 180;
+                var cos = Math.cos(rad);
+                var sin = Math.sin(rad);
+                var localDx = dx * cos - dy * sin;
+                var localDy = dx * sin + dy * cos;
+
+                var idx = vertexHandle.index;
+
+                // 在未旋转姿态下的径向 / 切向单位向量：
+                //   idx 0 右端点：径向 (1, 0)，切向 (0, 1)
+                //   idx 1 上端点：径向 (0,-1)，切向 (1, 0)
+                //   idx 2 左端点：径向 (-1,0)，切向 (0,-1)
+                //   idx 3 下端点：径向 (0, 1)，切向 (-1,0)
+                var radialDelta = 0;
+                var tangentialDelta = 0;
+
+                if (idx === 0) {
+                    radialDelta = localDx;
+                    tangentialDelta = localDy;
+                } else if (idx === 1) {
+                    radialDelta = -localDy;
+                    tangentialDelta = localDx;
+                } else if (idx === 2) {
+                    radialDelta = -localDx;
+                    tangentialDelta = -localDy;
+                } else { // idx === 3
+                    radialDelta = localDy;
+                    tangentialDelta = -localDx;
                 }
 
-                onActiveTranslationChanged: {
-                    if (!active)
-                        return;
+                var maxR = Math.min(root.width, root.height) / 2;
 
-                    var p = vertexDrag.centroid.position;
-                    var curRoot = vertexHandle.mapToItem(root, p.x, p.y);
-                    var dx = curRoot.x - pressRoot.x;
-                    var dy = curRoot.y - pressRoot.y;
+                // 1) 半径：只由径向增量决定，带径向死区，增量累加
+                var newRadiusX = root.radiusX;
+                var newRadiusY = root.radiusY;
 
-                    // 把位移转到“起始旋转角”的局部坐标系
-                    var rad = -startRotation * Math.PI / 180;
-                    var cos = Math.cos(rad);
-                    var sin = Math.sin(rad);
-                    var localDx = dx * cos - dy * sin;
-                    var localDy = dx * sin + dy * cos;
-
-                    var idx = vertexHandle.index;
-
-                    // 1) 先算新的半径（基于起始半径 + 径向位移）
-                    var newRadiusX = startRadiusX;
-                    var newRadiusY = startRadiusY;
-
-                    if (idx === 0) {
-                        newRadiusX = startRadiusX + localDx;
-                    } else if (idx === 2) {
-                        newRadiusX = startRadiusX - localDx;
-                    } else if (idx === 1) {
-                        newRadiusY = startRadiusY - localDy;
-                    } else if (idx === 3) {
-                        newRadiusY = startRadiusY + localDy;
-                    }
-
-                    var maxR = Math.min(root.width, root.height) / 2;
-                    newRadiusX = Math.min(Math.max(10, newRadiusX), maxR);
-                    newRadiusY = Math.min(Math.max(10, newRadiusY), maxR);
-
-                    // 2) 再算旋转角（基于起始旋转角 + 切向位移 / 新半径）
-                    var tangential = 0;
-                    var refRadius = 1;
-
-                    if (idx === 0) {
-                        tangential = localDy;
-                        refRadius = Math.max(1, newRadiusX);
-                    } else if (idx === 2) {
-                        tangential = -localDy;
-                        refRadius = Math.max(1, newRadiusX);
-                    } else if (idx === 1) {
-                        tangential = localDx;
-                        refRadius = Math.max(1, newRadiusY);
-                    } else { // idx === 3
-                        tangential = -localDx;
-                        refRadius = Math.max(1, newRadiusY);
-                    }
-
-                    var newRotation = startRotation;
-
-                    if (Math.abs(tangential) >= root.rotateDeadZone) {
-                        var angleDelta = (tangential / refRadius) * (180 / Math.PI);
-                        newRotation = startRotation + angleDelta;
-                        if (newRotation >= 180)
-                            newRotation -= 360;
-                        else if (newRotation < -180)
-                            newRotation += 360;
-                    }
-
-                    // 3) 一次性提交，顶点位置完全由椭圆参数推导，不会脱离
-                    root.radiusX = newRadiusX;
-                    root.radiusY = newRadiusY;
-                    root.rotationAngle = newRotation;
+                if (Math.abs(radialDelta) > root.radiusDeadZone) {
+                    if (idx === 0 || idx === 2)
+                        newRadiusX = root.radiusX + radialDelta;
+                    else
+                        newRadiusY = root.radiusY + radialDelta;
                 }
+
+                newRadiusX = Math.min(Math.max(10, newRadiusX), maxR);
+                newRadiusY = Math.min(Math.max(10, newRadiusY), maxR);
+
+                // 2) 旋转：只由切向增量决定，带切向死区，参考当前半径，增量累加
+                var newRotation = root.rotationAngle;
+
+                if (Math.abs(tangentialDelta) > root.rotateDeadZone) {
+                    var refRadius = (idx === 0 || idx === 2) ? Math.max(1, root.radiusX) : Math.max(1, root.radiusY);
+                    var angleDelta = (tangentialDelta / refRadius) * (180 / Math.PI);
+                    newRotation = root.rotationAngle + angleDelta;
+                    if (newRotation >= 180)
+                        newRotation -= 360;
+                    else if (newRotation < -180)
+                        newRotation += 360;
+                }
+
+                // 3) 一次性提交
+                root.radiusX = newRadiusX;
+                root.radiusY = newRadiusY;
+                root.rotationAngle = newRotation;
             }
         }
     }
 
-    // 圆心手柄
-    Rectangle {
-        id: centerHandle
-        width: root.pointRadius * 2
-        height: root.pointRadius * 2
+    Point {
+        id: centerPoint
         radius: root.pointRadius
+        x: root.width * 0.5
+        y: root.height * 0.5
         color: root.sideColor
-        border.color: Material.background
-        border.width: 1
-        x: root.centerX - width / 2
-        y: root.centerY - height / 2
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
 
-        DragHandler {
-            id: centerDrag
-            target: null
-            cursorShape: Qt.PointingHandCursor
-            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
+        property real startCenterX
+        property real startCenterY
+        property point pressRoot
 
-            property real startCenterX
-            property real startCenterY
-            property point pressRoot
+        onActiveChanged: {
+            if (!active) {
+                return;
+            }
+            startCenterX = centerPoint.x;
+            startCenterY = centerPoint.y;
+            var p = centerPoint.centroid.position;
+            pressRoot = mapToItem(root, p.x, p.y);
+        }
 
-            onActiveChanged: {
-                if (!active)
-                    return;
-                startCenterX = root.centerX;
-                startCenterY = root.centerY;
-                var p = centerDrag.centroid.position;
-                pressRoot = centerHandle.mapToItem(root, p.x, p.y);
+        onActiveTranslationChanged: {
+            if (!active) {
+                return;
+            }
+            var p = centerPoint.centroid.position;
+            var curRoot = mapToItem(root, p.x, p.y);
+            var dx = curRoot.x - pressRoot.x;
+            var dy = curRoot.y - pressRoot.y;
+
+            // 计算旋转后椭圆外接盒的半宽/半高
+            var rad = root.rotationAngle * Math.PI / 180;
+            var cos = Math.cos(rad);
+            var sin = Math.sin(rad);
+            var halfW = Math.sqrt(Math.pow(root.radiusX * cos, 2) + Math.pow(root.radiusY * sin, 2));
+            var halfH = Math.sqrt(Math.pow(root.radiusX * sin, 2) + Math.pow(root.radiusY * cos, 2));
+
+            var minX = halfW;
+            var maxX = root.width - halfW;
+            var minY = halfH;
+            var maxY = root.height - halfH;
+
+            // 防止半径过大导致区间反转
+            if (minX > maxX) {
+                minX = root.width / 2;
+                maxX = root.width / 2;
+            }
+            if (minY > maxY) {
+                minY = root.height / 2;
+                maxY = root.height / 2;
             }
 
-            onActiveTranslationChanged: {
-                if (!active)
-                    return;
-                var p = centerDrag.centroid.position;
-                var curRoot = centerHandle.mapToItem(root, p.x, p.y);
-                var dx = curRoot.x - pressRoot.x;
-                var dy = curRoot.y - pressRoot.y;
-
-                // 计算旋转后椭圆外接盒的半宽/半高
-                var rad = root.rotationAngle * Math.PI / 180;
-                var cos = Math.cos(rad);
-                var sin = Math.sin(rad);
-                var halfW = Math.sqrt(Math.pow(root.radiusX * cos, 2) + Math.pow(root.radiusY * sin, 2));
-                var halfH = Math.sqrt(Math.pow(root.radiusX * sin, 2) + Math.pow(root.radiusY * cos, 2));
-
-                var minX = halfW;
-                var maxX = root.width - halfW;
-                var minY = halfH;
-                var maxY = root.height - halfH;
-
-                // 防止半径过大导致区间反转
-                if (minX > maxX) {
-                    minX = root.width / 2;
-                    maxX = root.width / 2;
-                }
-                if (minY > maxY) {
-                    minY = root.height / 2;
-                    maxY = root.height / 2;
-                }
-
-                root.centerX = Math.max(minX, Math.min(maxX, startCenterX + dx));
-                root.centerY = Math.max(minY, Math.min(maxY, startCenterY + dy));
-            }
+            centerPoint.x = Math.max(minX, Math.min(maxX, startCenterX + dx));
+            centerPoint.y = Math.max(minY, Math.min(maxY, startCenterY + dy));
         }
     }
 
@@ -344,27 +349,19 @@ Item {
         visible: text.length > 0
         width: implicitWidth * 1.2
         height: implicitHeight * 1.3
-        x: Math.max(0, Math.min(root.width - width, root.centerX - width / 2))
-        y: Math.max(0, Math.min(root.height - height, root.centerY - root.radiusY - height - 4))
+        x: Math.max(0, Math.min(root.width - width, centerPoint.x - width / 2))
+        y: Math.max(0, Math.min(root.height - height, centerPoint.y - root.radiusY - height - 4))
         text: root.text
         color: Material.foreground
-        font.pixelSize: 12
+        font.pixelSize: root.pointSize
         font.bold: true
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
         background: Rectangle {
             color: Material.background
             border.color: root.sideColor
-            border.width: root.sideWidth * 0.5
-            radius: 4
+            border.width: root.sideColor * 0.5
+            radius: ElementStyle.elementRadius
         }
-    }
-
-    NumberAnimation on dashOffset {
-        from: 0
-        to: -22
-        duration: 600
-        loops: Animation.Infinite
-        running: centerDrag.active || root.vertexDragActive
     }
 }

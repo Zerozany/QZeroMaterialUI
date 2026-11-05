@@ -15,10 +15,10 @@ Rectangle {
         y: -root.height * 0.5
     }
 
+    property alias acceptedDevices: dragHandler.acceptedDevices
     readonly property alias active: dragHandler.active
     readonly property alias activeTranslation: dragHandler.activeTranslation
     readonly property alias centroid: dragHandler.centroid
-    readonly property alias acceptedDevices: dragHandler.acceptedDevices
 
     DragHandler {
         id: dragHandler
