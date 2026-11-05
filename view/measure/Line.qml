@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Material
+import QtQuick.Shapes
 
 Item {
     id: root
@@ -13,48 +14,38 @@ Item {
     property alias startPoint: startPoint
     property alias endPoint: endPoint
 
-    property real dashOffset: 0
     readonly property real radius: 10
     readonly property real lineWidth: 2
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color pointColor: Qt.hsla((Math.random() * 137.5) % 1, 0.7, 0.55, 1)
     readonly property real distance: Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y) * root.ratio
+    readonly property int pointSize: 12
 
-    Canvas {
-        id: canvas
+    Shape {
+        id: lineShape
         anchors.fill: parent
-        enabled: false
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = root.lineColor;
-            ctx.lineWidth = root.lineWidth;
-            ctx.lineCap = "butt";
-            ctx.setLineDash([12, 4, 2, 4]);
-            ctx.lineDashOffset = root.dashOffset;
-            ctx.beginPath();
-            ctx.moveTo(startPoint.x, startPoint.y);
-            ctx.lineTo(endPoint.x, endPoint.y);
-            ctx.stroke();
-        }
+        ShapePath {
+            strokeColor: root.lineColor
+            strokeWidth: root.lineWidth
+            fillColor: "transparent"
+            strokeStyle: ShapePath.DashLine
+            dashPattern: [12, 4, 2, 4]
+            dashOffset: 0
+            startX: startPoint.x
+            startY: startPoint.y
 
-        Connections {
-            target: root
-            function onStartPointChanged() {
-                canvas.requestPaint();
+            PathLine {
+                x: endPoint.x
+                y: endPoint.y
             }
-            function onEndPointChanged() {
-                canvas.requestPaint();
-            }
-            function onDashOffsetChanged() {
-                canvas.requestPaint();
-            }
-            function onWidthChanged() {
-                canvas.requestPaint();
-            }
-            function onHeightChanged() {
-                canvas.requestPaint();
+
+            NumberAnimation on dashOffset {
+                from: 0
+                to: -22
+                duration: 600
+                loops: Animation.Infinite
+                running: startPoint.active || endPoint.active
             }
         }
     }
@@ -108,7 +99,7 @@ Item {
         y: Math.max(0, Math.min(root.height - height, (startPoint.y + endPoint.y) / 2 - height / 2 - 18))
         text: root.text
         color: Material.foreground
-        font.pixelSize: 12
+        font.pixelSize: root.pointSize
         font.bold: true
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
@@ -118,13 +109,5 @@ Item {
             border.width: root.lineWidth * 0.5
             radius: ElementStyle.elementRadius
         }
-    }
-
-    NumberAnimation on dashOffset {
-        from: 0
-        to: -22
-        duration: 600
-        loops: Animation.Infinite
-        running: startPoint.active || endPoint.active
     }
 }

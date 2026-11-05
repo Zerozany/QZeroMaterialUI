@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Material
+import QtQuick.Shapes
 
 Item {
     id: root
@@ -14,54 +15,45 @@ Item {
     property alias centerPoint: centerPoint
 
     property real lastTranslation: 0
-    property real dashOffset: 0
     readonly property real pointRadius: 10
     readonly property real sideWidth: 2
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color sideColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
     readonly property color color: "transparent"
+    readonly property int pointSize: 12
 
-    Canvas {
-        id: canvas
+    Shape {
+        id: circleShape
         anchors.fill: parent
-        enabled: false
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = root.sideColor;
-            ctx.lineWidth = root.sideWidth;
-            ctx.lineCap = "butt";
-            ctx.setLineDash([12, 4, 2, 4]);
-            ctx.lineDashOffset = root.dashOffset;
-            ctx.beginPath();
-            ctx.arc(centerPoint.x, centerPoint.y, Math.max(0, root.radius), 0, Math.PI * 2, false);
-            ctx.stroke();
-        }
+        containsMode: Shape.FillContains
 
-        Connections {
-            target: root
-            function onWidthChanged() {
-                canvas.requestPaint();
+        ShapePath {
+            strokeColor: root.sideColor
+            strokeWidth: root.sideWidth
+            fillColor: root.color
+            strokeStyle: ShapePath.DashLine
+            dashPattern: [12, 4, 2, 4]
+            dashOffset: 0
+            startX: centerPoint.x + Math.max(0, root.radius)
+            startY: centerPoint.y
+
+            PathAngleArc {
+                centerX: centerPoint.x
+                centerY: centerPoint.y
+                radiusX: Math.max(0, root.radius)
+                radiusY: Math.max(0, root.radius)
+                startAngle: 0
+                sweepAngle: 360
             }
-            function onHeightChanged() {
-                canvas.requestPaint();
-            }
-            function onDashOffsetChanged() {
-                canvas.requestPaint();
-            }
-            function onCenterPointChanged() {
-                canvas.requestPaint();
+
+            NumberAnimation on dashOffset {
+                from: 0
+                to: -22
+                duration: 600
+                loops: Animation.Infinite
+                running: moveHandler.active || pinchHandler.active || wheelHandler.active
             }
         }
-    }
-
-    Rectangle {
-        radius: root.radius
-        x: centerPoint.x - radius
-        y: centerPoint.y - radius
-        width: radius * 2
-        height: radius * 2
-        color: root.color
 
         DragHandler {
             id: moveHandler
@@ -73,9 +65,8 @@ Item {
             property point pressCenter: Qt.point(0, 0)
 
             onActiveChanged: {
-                if (!active) {
+                if (!active)
                     return;
-                }
                 startCenter.x = centerPoint.x;
                 startCenter.y = centerPoint.y;
                 var p = moveHandler.centroid.position;
@@ -113,6 +104,8 @@ Item {
                     return;
                 }
                 root.radius = Math.max(Math.min(10, Math.min(root.width, root.height) / 2), Math.min(Math.min(root.width, root.height) / 2, root.lastTranslation * activeScale));
+                centerPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, centerPoint.x));
+                centerPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, centerPoint.y));
             }
         }
 
@@ -121,14 +114,10 @@ Item {
             acceptedDevices: PointerDevice.Mouse
 
             onWheel: function (wheel) {
-                var maxRadius = Math.min(root.width, root.height) / 2;
-                var minRadius = Math.min(10, maxRadius);
-                var step = root.radius * 0.05;
-                if (wheel.angleDelta.y > 0) {
-                    root.radius = Math.min(maxRadius, root.radius + step);
-                } else if (wheel.angleDelta.y < 0) {
-                    root.radius = Math.max(minRadius, root.radius - step);
-                }
+                var delta = wheel.angleDelta.y > 0 ? root.radius * 0.05 : -root.radius * 0.05;
+                root.radius = Math.max(Math.min(10, Math.min(root.width, root.height) / 2), Math.min(Math.min(root.width, root.height) / 2, root.radius + delta));
+                centerPoint.x = Math.max(root.radius, Math.min(root.width - root.radius, centerPoint.x));
+                centerPoint.y = Math.max(root.radius, Math.min(root.height - root.radius, centerPoint.y));
             }
         }
     }
@@ -152,7 +141,7 @@ Item {
         y: Math.max(0, Math.min(root.height - height, centerPoint.y - root.radius - height - 4))
         text: root.text
         color: Material.foreground
-        font.pixelSize: 12
+        font.pixelSize: root.pointSize
         font.bold: true
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
@@ -162,13 +151,5 @@ Item {
             border.width: root.sideWidth * 0.5
             radius: ElementStyle.elementRadius
         }
-    }
-
-    NumberAnimation on dashOffset {
-        from: 0
-        to: -22
-        duration: 600
-        loops: Animation.Infinite
-        running: moveHandler.active || pinchHandler.active
     }
 }
