@@ -107,37 +107,85 @@ Item {
 
     Repeater {
         id: repeater
-
-        // 四个顶点相对于椭圆角度的偏移量
         model: [0, 90, 180, 270]
 
         delegate: Point {
             radius: root.pointRadius
             color: root.sideColor
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen
-            x: centerPoint.x + (modelData / 90 % 2 === 0 ? root.horizontalRadius : root.verticalRadius) * Math.cos((root.angle + modelData) * Math.PI / 180)
-            y: centerPoint.y + (modelData / 90 % 2 === 0 ? root.horizontalRadius : root.verticalRadius) * Math.sin((root.angle + modelData) * Math.PI / 180)
+            x: centerPoint.x + (horizontalHandle ? root.horizontalRadius : root.verticalRadius) * Math.cos((root.angle + modelData) * Math.PI / 180)
+            y: centerPoint.y + (horizontalHandle ? root.horizontalRadius : root.verticalRadius) * Math.sin((root.angle + modelData) * Math.PI / 180)
 
             required property real modelData
-            property point startPoint: Qt.point(0, 0)
+            readonly property bool horizontalHandle: modelData / 90 % 2 === 0
+
+            // 按下瞬间的固定基准
+            property real pressRadius: 0
+            property real pressAngle: 0
+            property real pressDist: 0
+            property real pressDirAngle: 0
+            property real pressGlobalX: 0
+            property real pressGlobalY: 0
 
             onActiveChanged: {
                 if (!active) {
                     return;
                 }
-                startPoint = Qt.point(x, y);
+                const p = mapToItem(root, width / 2, height / 2);
+                const dx = p.x - centerPoint.x;
+                const dy = p.y - centerPoint.y;
+                pressGlobalX = p.x;
+                pressGlobalY = p.y;
+                pressRadius = horizontalHandle ? root.horizontalRadius : root.verticalRadius;
+                pressAngle = root.angle;
+                pressDist = Math.hypot(dx, dy);
+                pressDirAngle = Math.atan2(dy, dx) * 180 / Math.PI;
             }
 
             onActiveTranslationChanged: {
                 if (!active) {
                     return;
                 }
-                const dx = startPoint.x + activeTranslation.x - centerPoint.x;
-                const dy = startPoint.y + activeTranslation.y - centerPoint.y;
-                if (dx * dx + dy * dy < 1) {
+                const dx = pressGlobalX + activeTranslation.x - centerPoint.x;
+                const dy = pressGlobalY + activeTranslation.y - centerPoint.y;
+                const curDist = Math.hypot(dx, dy);
+                const curDirAngle = Math.atan2(dy, dx) * 180 / Math.PI;
+                const availX = Math.min(centerPoint.x - root.pointRadius, root.width - centerPoint.x - root.pointRadius);
+                const availY = Math.min(centerPoint.y - root.pointRadius, root.height - centerPoint.y - root.pointRadius);
+                // ---半径：先设目标值 ---
+                const prevRadius = horizontalHandle ? root.horizontalRadius : root.verticalRadius;
+                const targetRadius = Math.max(root.pointRadius, pressRadius + (curDist - pressDist));
+                if (horizontalHandle) {
+                    root.horizontalRadius = targetRadius;
+                } else {
+                    root.verticalRadius = targetRadius;
+                }
+                // 若新半径导致溢出，回退到上一合法值
+                const overflow = root.boundRadiusWidth > availX || root.boundRadiusHeight > availY;
+                if (overflow && horizontalHandle) {
+                    root.horizontalRadius = prevRadius;
+                }
+                if (overflow && !horizontalHandle) {
+                    root.verticalRadius = prevRadius;
+                }
+                // --- 旋转：手指相对中心的角度变化量 ---
+                let deltaAngle = curDirAngle - pressDirAngle;
+                deltaAngle = ((deltaAngle + 540) % 360) - 180;
+                if (Math.abs(deltaAngle) < 0.5) {
                     return;
                 }
-                root.angle = ((Math.atan2(dy, dx) * 180 / Math.PI - modelData) % 360 + 360) % 360;
+                const newAngle = ((pressAngle + deltaAngle) % 360 + 360) % 360;
+                const rad = newAngle * Math.PI / 180;
+                const c = Math.cos(rad);
+                const s = Math.sin(rad);
+                const rx = root.horizontalRadius;
+                const ry = root.verticalRadius;
+                const trialW = Math.sqrt(rx * rx * c * c + ry * ry * s * s);
+                const trialH = Math.sqrt(rx * rx * s * s + ry * ry * c * c);
+                if (trialW > availX || trialH > availY) {
+                    return;
+                }
+                root.angle = newAngle;
             }
         }
     }
@@ -169,106 +217,6 @@ Item {
             const maxY = root.height - root.boundRadiusHeight - root.pointRadius;
             x = Math.max(minX, Math.min(maxX, startPoint.x + activeTranslation.x));
             y = Math.max(minY, Math.min(maxY, startPoint.y + activeTranslation.y));
-        }
-    }
-
-    MultiPointTouchArea {
-        anchors.fill: parent
-        minimumTouchPoints: 2
-        maximumTouchPoints: 2
-
-        touchPoints: [
-            TouchPoint {
-                id: touch1
-            },
-            TouchPoint {
-                id: touch2
-            }
-        ]
-
-        // 初始双指局部距离（拆成标量，避免 Qt.point 构造与 .x/.y 取值）
-        property real startDeltaX: 0
-        property real startDeltaY: 0
-        // 初始椭圆半径
-        property real startHorizontalRadius: 0
-        property real startVerticalRadius: 0
-        // 旋转角三角函数（仅用于触摸点的局部坐标投影）
-        readonly property real cosAngle: Math.cos(root.radian)
-        readonly property real sinAngle: Math.sin(root.radian)
-
-        // 计算指定方向的最大半径：
-        // 复用 root.boundRadiusWidth / boundRadiusHeight（已含旋转投影），
-        // 按 “可用空间 / 当前投影半轴” 的比例放大当前半径。
-        function maxAxisRadius(horizontal) {
-            const availableX = Math.min(centerPoint.x - root.pointRadius, root.width - centerPoint.x - root.pointRadius);
-            const availableY = Math.min(centerPoint.y - root.pointRadius, root.height - centerPoint.y - root.pointRadius);
-            const currentBound = horizontal ? root.boundRadiusWidth : root.boundRadiusHeight;
-            const available = horizontal ? availableX : availableY;
-            const currentRadius = horizontal ? root.horizontalRadius : root.verticalRadius;
-            if (currentBound <= 0 || currentRadius <= 0) {
-                return 0;
-            }
-            return Math.max(0, available * currentRadius / currentBound);
-        }
-
-        onGestureStarted: function (gesture) {
-            if (gesture.touchPoints.length !== 2) {
-                return;
-            }
-            // 转换为椭圆局部坐标
-            const x1 = (touch1.x - centerPoint.x) * cosAngle + (touch1.y - centerPoint.y) * sinAngle;
-            const y1 = -(touch1.x - centerPoint.x) * sinAngle + (touch1.y - centerPoint.y) * cosAngle;
-            const x2 = (touch2.x - centerPoint.x) * cosAngle + (touch2.y - centerPoint.y) * sinAngle;
-            const y2 = -(touch2.x - centerPoint.x) * sinAngle + (touch2.y - centerPoint.y) * cosAngle;
-            // 判断两个触摸点是否在椭圆内部
-            if (root.horizontalRadius <= 0 || root.verticalRadius <= 0) {
-                return;
-            }
-            if (x1 * x1 / (root.horizontalRadius * root.horizontalRadius) + y1 * y1 / (root.verticalRadius * root.verticalRadius) > 1 || x2 * x2 / (root.horizontalRadius * root.horizontalRadius) + y2 * y2 / (root.verticalRadius * root.verticalRadius) > 1) {
-                return;
-            }
-            gesture.grab();
-            // 保存初始双指局部距离
-            startDeltaX = Math.abs((touch1.x - touch2.x) * cosAngle + (touch1.y - touch2.y) * sinAngle);
-            startDeltaY = Math.abs(-(touch1.x - touch2.x) * sinAngle + (touch1.y - touch2.y) * cosAngle);
-            // 保存初始半径
-            startHorizontalRadius = root.horizontalRadius;
-            startVerticalRadius = root.verticalRadius;
-        }
-
-        onUpdated: {
-            if ((startDeltaX <= 0 && startDeltaY <= 0) || touchPoints.length !== 2) {
-                return;
-            }
-            // 当前双指局部距离
-            const currentX = Math.abs((touch1.x - touch2.x) * cosAngle + (touch1.y - touch2.y) * sinAngle);
-            const currentY = Math.abs(-(touch1.x - touch2.x) * sinAngle + (touch1.y - touch2.y) * cosAngle);
-            // 根据初始距离锁定缩放方向
-            const horizontal = startDeltaX >= startDeltaY;
-            const startDistance = horizontal ? startDeltaX : startDeltaY;
-            const currentDistance = horizontal ? currentX : currentY;
-            const initialRadius = horizontal ? startHorizontalRadius : startVerticalRadius;
-            if (startDistance <= 1) {
-                return;
-            }
-            // 计算缩放半径
-            const targetRadius = initialRadius * currentDistance / startDistance;
-            const newRadius = Math.max(root.pointRadius, Math.min(targetRadius, maxAxisRadius(horizontal)));
-            if (horizontal) {
-                root.horizontalRadius = newRadius;
-            } else {
-                root.verticalRadius = newRadius;
-            }
-        }
-
-        onReleased: {
-            startDeltaX = 0;
-            startDeltaY = 0;
-        }
-
-        onCanceled: {
-            startDeltaX = 0;
-            startDeltaY = 0;
         }
     }
 

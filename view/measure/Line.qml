@@ -18,7 +18,6 @@ Item {
     readonly property real lineWidth: 2
     readonly property size defaultSize: Qt.size(300, 300)
     readonly property color lineColor: Qt.hsla(Math.random(), 0.7, 0.55, 1)
-    readonly property color pointColor: Qt.hsla((Math.random() * 137.5) % 1, 0.7, 0.55, 1)
     readonly property real distance: Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y) * root.ratio
     readonly property int pointSize: 12
 
@@ -53,7 +52,7 @@ Item {
     Point {
         id: startPoint
         radius: root.radius
-        color: root.pointColor
+        color: root.lineColor
         x: root.width * 0.25
         y: root.height * 0.5
 
@@ -71,7 +70,7 @@ Item {
     Point {
         id: endPoint
         radius: root.radius
-        color: root.pointColor
+        color: root.lineColor
         x: root.width * 0.75
         y: root.height * 0.5
 
