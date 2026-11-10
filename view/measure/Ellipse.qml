@@ -49,8 +49,8 @@ Item {
             PathAngleArc {
                 centerX: centerPoint.x
                 centerY: centerPoint.y
-                radiusX: root.horizontalRadius
-                radiusY: root.verticalRadius
+                radiusX: Math.max(0.1, root.horizontalRadius)
+                radiusY: Math.max(0.1, root.verticalRadius)
                 startAngle: 0
                 sweepAngle: 360
             }
@@ -237,7 +237,7 @@ Item {
         background: Rectangle {
             color: Material.background
             border.color: root.sideColor
-            border.width: root.sideColor * 0.5
+            border.width: root.sideWidth * 0.5
             radius: ElementStyle.elementRadius
         }
     }
